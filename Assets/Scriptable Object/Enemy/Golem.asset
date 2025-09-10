@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97a4037738bd7a64dbb87e8365816167, type: 3}
   m_Name: Golem
   m_EditorClassIdentifier: 
-  _health: 0
-  _damage: 0
-  _strength: 0
-  _dexterity: 0
-  _endurance: 0
-  _reward: {fileID: 0}
+  _health: 10
+  _damage: 1
+  _strength: 3
+  _dexterity: 1
+  _endurance: 3
+  _reward: {fileID: 11400000, guid: a0bbcadbd79a4454ab7ebf58c3afbb7b, type: 2}

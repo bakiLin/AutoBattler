@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97a4037738bd7a64dbb87e8365816167, type: 3}
   m_Name: Ghost
   m_EditorClassIdentifier: 
-  _health: 0
-  _damage: 0
-  _strength: 0
-  _dexterity: 0
-  _endurance: 0
-  _reward: {fileID: 0}
+  _health: 6
+  _damage: 3
+  _strength: 1
+  _dexterity: 3
+  _endurance: 1
+  _reward: {fileID: 11400000, guid: fb0d8a98d44a93a4e8d7cc31965c5e4c, type: 2}
