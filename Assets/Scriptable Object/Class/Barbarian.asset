@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: Barbarian
   m_EditorClassIdentifier: 
   _health: 6
+  _weapon: {fileID: 11400000, guid: cbffd7726eb69654c91625faa35d85da, type: 2}

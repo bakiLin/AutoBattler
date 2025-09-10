@@ -1,8 +1,8 @@
 using UnityEngine;
 using Random = System.Random;
 
-[CreateAssetMenu(menuName = "SO/Character", fileName = "New Character")]
-public class CharacterSO : ScriptableObject
+[CreateAssetMenu(menuName = "SO/Class", fileName = "New Class")]
+public class ClassSO : ScriptableObject
 {
     [SerializeField]
     private int _health;
@@ -14,12 +14,12 @@ public class CharacterSO : ScriptableObject
 
     public WeaponSO Weapon { get => _weapon; }
 
-    public CharacterStats GetStartStats()
+    public ClassStats GetStartStats()
     {
         int strength = _random.Next(1, 4);
         int dexterity = _random.Next(1, 4);
         int endurance = _random.Next(1, 4);
 
-        return new CharacterStats(_health, strength, dexterity, endurance);
+        return new ClassStats(_health, strength, dexterity, endurance);
     }
 }

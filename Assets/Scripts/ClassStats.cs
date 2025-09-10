@@ -1,8 +1,8 @@
-public class CharacterStats
+public class ClassStats
 {
     public int Health, Strength, Dexterity, Endurance;
 
-    public CharacterStats(int health, int strength, int dexterity, int endurance)
+    public ClassStats(int health, int strength, int dexterity, int endurance)
     {
         Health = health;
         Strength = strength;

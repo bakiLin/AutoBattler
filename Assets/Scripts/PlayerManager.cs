@@ -6,13 +6,14 @@ public class PlayerManager : MonoBehaviour
     private PlayerSO _player;
 
     [SerializeField]
-    private CharacterSO _thief, _warrior, _barbarian;
+    private ClassSO _thief, _warrior, _barbarian;
 
-    public void SelectStartClass(CharacterSO playerClass)
+    public void SelectStartClass(ClassSO playerClass)
     {
         _player.Stats = playerClass.GetStartStats();
         _player.Weapon = playerClass.Weapon;
 
-        //Debug.Log($"{_player.Weapon.name} {_player.Weapon.Damage}");
+        //Debug.Log($"{_player.Stats.Health} {_player.Stats.Strength} {_player.Stats.Dexterity} {_player.Stats.Endurance}");
+        //Debug.Log($"{_player.Weapon.name} {_player.Weapon.Type} {_player.Weapon.Damage}");
     }
 }
