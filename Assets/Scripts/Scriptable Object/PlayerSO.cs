@@ -1,16 +1,57 @@
+using System;
 using UnityEngine;
+using Random = System.Random;
 
 [CreateAssetMenu(menuName = "SO/Player", fileName = "New Player")]
 public class PlayerSO : ScriptableObject
 {
-    private ClassStats _stats;
+    private Random _random = new Random();
+    // Health
+    private int _health;
 
+    public int Health { get => _health; }
+    // Stats
+    private PlayerStats _stats;
+
+    public PlayerStats Stats { get => _stats; }
+
+    // Class
+    private ClassSO _class;
+
+    public ClassSO Class {  get => _class; }
+
+    // Weapon
     private WeaponSO _weapon;
 
-    public ClassStats Stats {
-        get => _stats;
-        set => _stats = new ClassStats(value.Health, value.Strength, value.Dexterity, value.Endurance); 
+    public WeaponSO Weapon { get => _weapon; }
+    // Events
+    public event Action<PlayerStats> OnGenerateStats;
+
+    public event Action<ClassSO> OnSelectStartClass;
+
+    //public event Action<WeaponSO> OnChangeWeapon;
+
+    private void OnEnable()
+    {
+        _health = 0;
+        _stats = null;
+        _class = null;
+        _weapon = null;
     }
 
-    public WeaponSO Weapon { get => _weapon; set => _weapon = value; }
+    public void CreateNewPlayer()
+    {
+        _stats = new PlayerStats(_random.Next(1, 4), _random.Next(1, 4), _random.Next(1, 4));
+
+        OnGenerateStats?.Invoke(_stats);
+    }
+
+    public void SetStartClass(ClassSO characterClass)
+    {
+        _class = characterClass;
+        _health = characterClass.Health;
+        _weapon = characterClass.Weapon;
+
+        OnSelectStartClass?.Invoke(_class);
+    }
 }
