@@ -8,4 +8,12 @@ public class PlayerStats
         Dexterity = dexterity;
         Endurance = endurance;
     }
+
+    public bool IsEqual(PlayerStats stats)
+    {
+        if (stats == null) return false;
+        if (stats.Strength == Strength && stats.Dexterity == Dexterity
+            && stats.Endurance == Endurance) return true;
+        return false;
+    }
 }

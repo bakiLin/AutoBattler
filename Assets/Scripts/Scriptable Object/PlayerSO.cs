@@ -9,7 +9,13 @@ public class PlayerSO : ScriptableObject
     // Health
     private int _health;
 
-    public int Health { get => _health; }
+    public int Health { 
+        get => _health; 
+        set {
+            if (value > 0) _health = value;
+            else _health = 0;
+        }
+    }
     // Stats
     private PlayerStats _stats;
 
@@ -29,7 +35,7 @@ public class PlayerSO : ScriptableObject
 
     public event Action<ClassSO> OnSelectStartClass;
 
-    //public event Action<WeaponSO> OnChangeWeapon;
+    public event Action OnReady;
 
     private void OnEnable()
     {
@@ -41,9 +47,14 @@ public class PlayerSO : ScriptableObject
 
     public void CreateNewPlayer()
     {
-        _stats = new PlayerStats(_random.Next(1, 4), _random.Next(1, 4), _random.Next(1, 4));
+        PlayerStats stats; 
+        do {
+            stats = new PlayerStats(_random.Next(1, 4), _random.Next(1, 4), _random.Next(1, 4));
+        } while (stats.IsEqual(_stats));
+        _stats = stats;
 
         OnGenerateStats?.Invoke(_stats);
+        CheckIfReady();
     }
 
     public void SetStartClass(ClassSO characterClass)
@@ -53,5 +64,12 @@ public class PlayerSO : ScriptableObject
         _weapon = characterClass.Weapon;
 
         OnSelectStartClass?.Invoke(_class);
+        CheckIfReady();
+    }
+
+    public void CheckIfReady()
+    {
+        if (_stats != null && _class != null)
+            OnReady?.Invoke();
     }
 }
