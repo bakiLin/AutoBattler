@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Random = System.Random;
 
@@ -20,28 +21,27 @@ public class PlayerSO : ScriptableObject
     private PlayerStats _stats;
 
     public PlayerStats Stats { get => _stats; }
-
     // Class
-    private ClassSO _class;
+    private Dictionary<string, ClassSO> _classDictionary;
 
-    public ClassSO Class {  get => _class; }
-
+    public Dictionary<string, ClassSO> ClassDictionary {  get => _classDictionary; }
     // Weapon
     private WeaponSO _weapon;
 
     public WeaponSO Weapon { get => _weapon; }
     // Events
-    public event Action<PlayerStats> OnGenerateStats;
+    public event Action OnGenerateStats, OnReady;
 
-    public event Action<ClassSO> OnSelectStartClass;
-
-    public event Action OnReady;
+    public event Action<ClassSO> OnSelectStartClass, OnChangeLevelUpUI;
+    // Variable
+    private Dictionary<string, ClassSO> _dictionaryCopy;
 
     private void OnEnable()
     {
         _health = 0;
         _stats = null;
-        _class = null;
+        _classDictionary = new Dictionary<string, ClassSO>();
+        _dictionaryCopy = new Dictionary<string, ClassSO>();
         _weapon = null;
     }
 
@@ -53,23 +53,70 @@ public class PlayerSO : ScriptableObject
         } while (stats.IsEqual(_stats));
         _stats = stats;
 
-        OnGenerateStats?.Invoke(_stats);
+        OnGenerateStats?.Invoke();
         CheckIfReady();
     }
 
     public void SetStartClass(ClassSO characterClass)
     {
-        _class = characterClass;
+        foreach (var value in _classDictionary.Values) value.Level = 0;
+
+        if (!_classDictionary.ContainsKey(characterClass.name))
+            _classDictionary.Add(characterClass.name, new ClassSO(characterClass));
+        _classDictionary[characterClass.name].Level = 1;
+
         _health = characterClass.Health;
         _weapon = characterClass.Weapon;
 
-        OnSelectStartClass?.Invoke(_class);
+        OnSelectStartClass?.Invoke(characterClass);
         CheckIfReady();
     }
 
     public void CheckIfReady()
     {
-        if (_stats != null && _class != null)
+        if (_stats != null && _classDictionary != null)
             OnReady?.Invoke();
+    }
+
+    public int GetHealth()
+    {
+        int health = 0;
+        foreach (var value in _classDictionary.Values)
+            if (value.Level > 0) health += value.Health * value.Level;
+        return health;
+    }
+
+    public void RestoreHealth()
+    {
+        _health = GetHealth();
+        OnChangeLevelUpUI?.Invoke(null);
+    }
+
+    public void CopyDictionary()
+    {
+        _dictionaryCopy.Clear();
+
+        foreach (var pair in _classDictionary)
+        {
+            _dictionaryCopy.Add(pair.Key, pair.Value);
+            _dictionaryCopy[pair.Key] = new ClassSO(pair.Value);
+        }
+    }
+
+    public void AddClass(ClassSO characterClass)
+    {
+        _classDictionary.Clear();
+        foreach (var pair in _dictionaryCopy)
+        {
+            _classDictionary.Add(pair.Key, pair.Value);
+            _classDictionary[pair.Key] = new ClassSO(pair.Value);
+        }
+
+        if (!_classDictionary.ContainsKey(characterClass.name))
+            _classDictionary.Add(characterClass.name, new ClassSO(characterClass));
+        _classDictionary[characterClass.name].Level += 1;
+
+        _health = GetHealth();
+        OnChangeLevelUpUI?.Invoke(characterClass);
     }
 }

@@ -32,11 +32,11 @@ public class PlayerUI : MonoBehaviour
         _player.OnSelectStartClass -= SelectStartClassUI;
     }
 
-    private void ChangeStatsUI(PlayerStats stats)
+    private void ChangeStatsUI()
     {
-        _strength.text = stats.Strength.ToString();
-        _dexterity.text = stats.Dexterity.ToString();
-        _endurance.text = stats.Endurance.ToString();
+        _strength.text = _player.Stats.Strength.ToString();
+        _dexterity.text = _player.Stats.Dexterity.ToString();
+        _endurance.text = _player.Stats.Endurance.ToString();
 
         SumUpStats();
     }
@@ -46,19 +46,19 @@ public class PlayerUI : MonoBehaviour
         _classType.text = characterClass.name;
         _classHealth.text = characterClass.Health.ToString();
 
-        _weaponName.text = characterClass.Weapon.name;
-        _weaponType.text = characterClass.Weapon.Type.ToString();
-        _weaponDamage.text = characterClass.Weapon.Damage.ToString();
+        _weaponName.text = _player.Weapon.name;
+        _weaponType.text = _player.Weapon.Type.ToString();
+        _weaponDamage.text = _player.Weapon.Damage.ToString();
 
         SumUpStats();
     }
 
     private void SumUpStats()
     {
-        if (_player.Stats != null && _player.Class != null)
+        if (_player.Stats != null && _player.ClassDictionary != null)
         {
-            _classHealth.text = $"{_player.Class.Health} (+ {_player.Stats.Endurance})";
-            _weaponDamage.text = $"{_player.Weapon.Damage} (+ {_player.Stats.Strength})";
+            _classHealth.text = $"{_player.GetHealth()} (+ {_player.Stats.Endurance})";
+            _weaponDamage.text = $"{_player.Weapon?.Damage} (+ {_player.Stats.Strength})";
         }
     }
 }

@@ -17,4 +17,9 @@ public class PlayerManager : MonoBehaviour
     {
         _player.SetStartClass(characterClass);
     }
+
+    public void AddClass(ClassSO characterClass)
+    {
+        _player.AddClass(characterClass);
+    }
 }

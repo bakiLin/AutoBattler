@@ -9,7 +9,6 @@ public class PlayerBattleUI : MonoBehaviour
     [SerializeField]
     private PlayerSO _player;
 
-    [SerializeField] private TextMeshProUGUI _class;
     [SerializeField] private TextMeshProUGUI _health;
     [SerializeField] private TextMeshProUGUI _damage;
     [SerializeField] private TextMeshProUGUI _strength;
@@ -28,11 +27,7 @@ public class PlayerBattleUI : MonoBehaviour
 
     private void SetPlayerBattleStats()
     {
-        _class.text = _player.Class.name;
-
-        if (_player.Health > 0) _health.text = (_player.Health + _player.Stats.Endurance).ToString();
-        else _health.text = _player.Health.ToString();
-
+        _health.text = _player.Health.ToString();
         _damage.text = (_player.Weapon.Damage + _player.Stats.Strength).ToString();
         _strength.text = _player.Stats.Strength.ToString();
         _dexterity.text = _player.Stats.Dexterity.ToString();

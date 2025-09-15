@@ -26,10 +26,7 @@ public class EnemyBattleUI : MonoBehaviour
     private void SetEnemyStats(EnemySO enemy)
     {
         _enemy.text = enemy.name;
-
-        if (enemy.Health > 0) _health.text = (enemy.Health + enemy.Endurance).ToString();
-        else _health.text = enemy.Health.ToString();
-
+        _health.text = enemy.Health.ToString();
         _damage.text = (enemy.Damage + enemy.Strength).ToString();
         _strength.text = enemy.Strength.ToString();
         _dexterity.text = enemy.Dexterity.ToString();
