@@ -10,7 +10,7 @@ public class BattleManager : MonoBehaviour
     private PlayerSO _player;
 
     [SerializeField]
-    private EnemyHolder _enemyHolder;
+    private ScriptableObjectHolder _scriptableObjectHolder;
 
     [SerializeField]
     private TextMeshProUGUI _status;
@@ -18,41 +18,26 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     private float _statusChangeTime;
 
-    private bool _ready, _isPlayerTurn;
+    private bool _isPlayerTurn;
 
     private EnemySO _enemy;
 
     private Random _random = new Random();
 
-    // Events
-    public Action OnStartBattle, OnLevelUpChangeUI;
-    public Action<EnemySO> OnChangeEnemyUI; 
+    public Action OnStartBattle, OnEndBattle;
 
-    private void OnEnable()
-    {
-        _player.OnReady += ReadyToBattle;
-    }
-
-    private void OnDisable()
-    {
-        _player.OnReady -= ReadyToBattle;
-    }
-
-    private void ReadyToBattle()
-    {
-        _ready = true;
-    }
+    public Action<EnemySO> OnUpdateEnemyUI; 
 
     public void StartBattle()
     {
-        if (_ready)
+        if (_player.IsReadyToBattle())
         {
-            _enemy = new EnemySO(_enemyHolder.GetRandom());
+            _enemy = new EnemySO(_scriptableObjectHolder.GetRandom());
             _enemy.Health += _enemy.Endurance;
             _player.Health += _player.Stats.Endurance;
 
             OnStartBattle?.Invoke();
-            OnChangeEnemyUI?.Invoke(_enemy);
+            OnUpdateEnemyUI?.Invoke(_enemy);
             
             StartCoroutine(BattleCoroutine());
         }
@@ -60,8 +45,8 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator BattleCoroutine()
     {
-        yield return new WaitForSeconds(_statusChangeTime);
         int counter = 0;
+        yield return new WaitForSeconds(_statusChangeTime);
 
         while (true)
         {
@@ -87,9 +72,16 @@ public class BattleManager : MonoBehaviour
         {
             _player.RestoreHealth();
             _player.CopyDictionary();
-            OnLevelUpChangeUI?.Invoke();
+            OnEndBattle?.Invoke();
         }
         else _status.text = "Game Over";
+    }
+
+    private bool IsPlayerFirst()
+    {
+        if (_player.Stats.Dexterity >= _enemy.Dexterity)
+            _isPlayerTurn = true;
+        return _isPlayerTurn;
     }
 
     private bool Attack()
@@ -99,13 +91,8 @@ public class BattleManager : MonoBehaviour
             if (IsAttackSuccessful(_player.Stats.Dexterity, _enemy.Dexterity))
             {
                 _enemy.Health -= _player.Weapon.Damage + _player.Stats.Strength;
-                OnChangeEnemyUI.Invoke(_enemy);
-
-                if (_enemy.Health == 0)
-                {
-                    _status.text = $"Player won";
-                    return false;
-                }
+                OnUpdateEnemyUI.Invoke(_enemy);
+                if (IsDead(_enemy.Health, "Player won")) return false;
             }
         }
         else
@@ -113,23 +100,20 @@ public class BattleManager : MonoBehaviour
             if (IsAttackSuccessful(_enemy.Dexterity, _player.Stats.Dexterity))
             {
                 _player.Health -= _enemy.Damage + _enemy.Strength;
-                OnStartBattle.Invoke();
-
-                if (_player.Health == 0)
-                {
-                    _status.text = $"{_enemy.name} won";
-                    return false;
-                }
+                if (IsDead(_player.Health, $"{_enemy.name} won")) return false;
             }
         }
         return true;
     }
 
-    private bool IsPlayerFirst()
+    private bool IsDead(int health, string status)
     {
-        if (_player.Stats.Dexterity >= _enemy.Dexterity)
-            _isPlayerTurn = true;
-        return _isPlayerTurn;
+        if (health == 0)
+        {
+            _status.text = status;
+            return true;
+        }
+        return false;
     }
 
     private bool IsAttackSuccessful(int attackDexterity, int targetDexterity)

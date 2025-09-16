@@ -1,0 +1,57 @@
+using TMPro;
+using UnityEngine;
+
+public class BattleUI : MonoBehaviour
+{
+    [SerializeField]
+    private BattleManager _battleManager;
+
+    [SerializeField]
+    private PlayerSO _player;
+
+    [Header("PLAYER")]
+    [SerializeField] private TextMeshProUGUI _playerHealth;
+    [SerializeField] private TextMeshProUGUI _playerDamage;
+    [SerializeField] private TextMeshProUGUI _playerStrength;
+    [SerializeField] private TextMeshProUGUI _playerDexterity;
+    [SerializeField] private TextMeshProUGUI _playerEndurance;
+
+    [Header("ENEMY")]
+    [SerializeField] private TextMeshProUGUI _enemyName;
+    [SerializeField] private TextMeshProUGUI _enemyHealth;
+    [SerializeField] private TextMeshProUGUI _enemyDamage;
+    [SerializeField] private TextMeshProUGUI _enemyStrength;
+    [SerializeField] private TextMeshProUGUI _enemyDexterity;
+    [SerializeField] private TextMeshProUGUI _enemyEndurance;
+
+    private void OnEnable()
+    {
+        _player.OnUpdateHealth += UpdatePlayerStats;
+        _battleManager.OnUpdateEnemyUI += UpdateEnemyStats;
+    }
+
+    private void OnDisable()
+    {
+        _player.OnUpdateHealth -= UpdatePlayerStats;
+        _battleManager.OnUpdateEnemyUI -= UpdateEnemyStats;
+    }
+
+    private void UpdatePlayerStats()
+    {
+        _playerHealth.text = _player.Health.ToString();
+        _playerDamage.text = (_player.Weapon.Damage + _player.Stats.Strength).ToString();
+        _playerStrength.text = _player.Stats.Strength.ToString();
+        _playerDexterity.text = _player.Stats.Dexterity.ToString();
+        _playerEndurance.text = _player.Stats.Endurance.ToString();
+    }
+
+    private void UpdateEnemyStats(EnemySO enemy)
+    {
+        _enemyName.text = enemy.name;
+        _enemyHealth.text = enemy.Health.ToString();
+        _enemyDamage.text = (enemy.Damage + enemy.Strength).ToString();
+        _enemyStrength.text = enemy.Strength.ToString();
+        _enemyDexterity.text = enemy.Dexterity.ToString();
+        _enemyEndurance.text = enemy.Endurance.ToString();
+    }
+}
