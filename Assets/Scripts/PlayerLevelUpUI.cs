@@ -38,6 +38,10 @@ public class PlayerLevelUpUI : MonoBehaviour
     private void OnDisable()
     {
         _player.OnChangeLevelUpUI -= SetStats;
+
+        _thiefButton.SetActive(true);
+        _warriorButton.SetActive(true);
+        _barbarianButton.SetActive(true);   
     }
 
     private void SetStats(ClassSO characterClass)

@@ -6,10 +6,7 @@ public class WindowManager : MonoBehaviour
     private BattleManager _battleManager;
 
     [SerializeField]
-    private GameObject _characterCreation, _levelUp;
-
-    [SerializeField]
-    private GameObject[] _battleUI;
+    private GameObject _battleButton, _characterCreation, _battleWindow, _levelUp;
 
     private void OnEnable()
     {
@@ -25,17 +22,16 @@ public class WindowManager : MonoBehaviour
 
     private void SetBattleWindows()
     {
+        _battleButton.SetActive(false);
         _characterCreation.SetActive(false);
-
-        foreach (var item in _battleUI)
-            item.SetActive(true);
+        _levelUp.SetActive(false);
+        _battleWindow.SetActive(true);
     }
 
     private void LevelUpWindow()
     {
-        foreach (var item in _battleUI)
-            item.SetActive(false);
-
+        _battleWindow.SetActive(false);
+        _battleButton.SetActive(true);
         _levelUp.SetActive(true);
     }
 }
