@@ -25,6 +25,8 @@ public class EnemySO : ScriptableObject
 
     public int Endurance { get => _endurance; }
 
+    public WeaponSO Reward { get => _reward; }
+
     public EnemySO(EnemySO enemy)
     {
         name = enemy.name;
@@ -33,5 +35,6 @@ public class EnemySO : ScriptableObject
         _strength = enemy.Strength;
         _dexterity = enemy.Dexterity;
         _endurance = enemy.Endurance;
+        _reward = enemy.Reward;
     }
 }

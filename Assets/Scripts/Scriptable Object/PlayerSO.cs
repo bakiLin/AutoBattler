@@ -31,7 +31,13 @@ public class PlayerSO : ScriptableObject
     // Weapon
     private WeaponSO _weapon;
 
-    public WeaponSO Weapon { get => _weapon; }
+    public WeaponSO Weapon {
+        get => _weapon; 
+        set { 
+            _weapon = value; 
+            OnUpdateClass?.Invoke(null);
+        }
+    }
 
     // Events
     public event Action OnUpdateStats, OnUpdateHealth;
@@ -82,11 +88,19 @@ public class PlayerSO : ScriptableObject
         OnUpdateClass?.Invoke(characterClass);
     }
 
-    public bool IsReadyToBattle()
+    public bool IsReadyToBattle(int requiredLevel)
     {
-        if (_stats != null && _classDictionary.Count > 0)
+        if (_stats != null && requiredLevel == CalculateLevel())
             return true;
         return false;
+    }
+
+    private int CalculateLevel()
+    {
+        int level = 0;
+        foreach (var value in _classDictionary.Values)
+            level += value.Level;
+        return level;
     }
 
     public int GetHealth()

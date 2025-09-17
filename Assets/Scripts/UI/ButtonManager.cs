@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CharacterButtonManager : MonoBehaviour
+public class ButtonManager : MonoBehaviour
 {
     [SerializeField]
     private PlayerSO _player;

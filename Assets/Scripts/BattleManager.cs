@@ -20,18 +20,24 @@ public class BattleManager : MonoBehaviour
 
     private bool _isPlayerTurn;
 
+    private int _requiredLevel = 1;
+
     private EnemySO _enemy;
 
     private Random _random = new Random();
 
-    public Action OnStartBattle, OnEndBattle;
+    public Action OnStartBattle;
+
+    public Action<WeaponSO> OnEndBattle;
 
     public Action<EnemySO> OnUpdateEnemyUI; 
 
     public void StartBattle()
     {
-        if (_player.IsReadyToBattle())
+        if (_player.IsReadyToBattle(_requiredLevel))
         {
+            _requiredLevel++;
+
             _enemy = new EnemySO(_scriptableObjectHolder.GetRandom());
             _enemy.Health += _enemy.Endurance;
             _player.Health += _player.Stats.Endurance;
@@ -72,7 +78,7 @@ public class BattleManager : MonoBehaviour
         {
             _player.RestoreHealth();
             _player.CopyDictionary();
-            OnEndBattle?.Invoke();
+            OnEndBattle?.Invoke(_enemy.Reward);
         }
         else _status.text = "Game Over";
     }

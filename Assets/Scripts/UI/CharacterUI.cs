@@ -51,12 +51,12 @@ public class CharacterUI : MonoBehaviour
         _weaponType.text = weapon.Type.ToString();
         _weaponDamage.text = weapon.Damage.ToString();
 
-        SetClassLevel(_scriptableObjectHolder.Thief.name, ref _thief);
-        SetClassLevel(_scriptableObjectHolder.Warrior.name, ref _warrior);
-        SetClassLevel(_scriptableObjectHolder.Barbarian.name, ref _barbarian);
+        _thief.text = SetClassLevel(_scriptableObjectHolder.Thief.name);
+        _warrior.text = SetClassLevel(_scriptableObjectHolder.Warrior.name);
+        _barbarian.text = SetClassLevel(_scriptableObjectHolder.Barbarian.name);
 
         ResetButtons();
-        if (characterClass != null) SetButtons(characterClass);
+        if (characterClass != null) SetButtons(characterClass.name);
         UpdateBonus();
     }
 
@@ -78,12 +78,11 @@ public class CharacterUI : MonoBehaviour
         }
     }
 
-    private void SetClassLevel(string className, ref TextMeshProUGUI text)
+    private string SetClassLevel(string className)
     {
         if (_player.ClassDictionary.ContainsKey(className))
-            text.text = _player.ClassDictionary[className].Level.ToString();
-        else
-            text.text = "0";
+            return _player.ClassDictionary[className].Level.ToString();
+        return "0";
     }
 
     private void ResetButtons()
@@ -93,14 +92,10 @@ public class CharacterUI : MonoBehaviour
         _barbarianButton.SetActive(true);
     }
 
-    private void SetButtons(ClassSO characterClass)
+    private void SetButtons(string className)
     {
-        _thiefButton.SetActive(true);
-        _warriorButton.SetActive(true);
-        _barbarianButton.SetActive(true);
-
-        if (characterClass.name == _scriptableObjectHolder.Thief.name) _thiefButton.SetActive(false);
-        else if (characterClass.name == _scriptableObjectHolder.Warrior.name) _warriorButton.SetActive(false);
-        else if (characterClass.name == _scriptableObjectHolder.Barbarian.name) _barbarianButton.SetActive(false);
+        if (className == _scriptableObjectHolder.Thief.name) _thiefButton.SetActive(false);
+        else if (className == _scriptableObjectHolder.Warrior.name) _warriorButton.SetActive(false);
+        else if (className == _scriptableObjectHolder.Barbarian.name) _barbarianButton.SetActive(false);
     }
 }
