@@ -49,9 +49,9 @@ public class BattleUI : MonoBehaviour
     {
         _enemyName.text = enemy.name;
         _enemyHealth.text = enemy.Health.ToString();
-        _enemyDamage.text = (enemy.Damage + enemy.Strength).ToString();
-        _enemyStrength.text = enemy.Strength.ToString();
-        _enemyDexterity.text = enemy.Dexterity.ToString();
-        _enemyEndurance.text = enemy.Endurance.ToString();
+        _enemyDamage.text = (enemy.Damage + enemy.Stats.Strength).ToString();
+        _enemyStrength.text = enemy.Stats.Strength.ToString();
+        _enemyDexterity.text = enemy.Stats.Dexterity.ToString();
+        _enemyEndurance.text = enemy.Stats.Endurance.ToString();
     }
 }

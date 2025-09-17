@@ -19,9 +19,9 @@ public class PlayerSO : ScriptableObject
     }
 
     // Stats
-    private PlayerStats _stats;
+    private Stats _stats;
 
-    public PlayerStats Stats { get => _stats; }
+    public Stats Stats { get => _stats; }
 
     // Class
     private Dictionary<string, ClassSO> _classDictionary;
@@ -60,8 +60,8 @@ public class PlayerSO : ScriptableObject
 
     public void GenerateStats()
     {
-        PlayerStats stats; 
-        do stats = new PlayerStats(_random.Next(1, 4), _random.Next(1, 4), _random.Next(1, 4));
+        Stats stats; 
+        do stats = new Stats(_random.Next(1, 4), _random.Next(1, 4), _random.Next(1, 4));
         while (stats.IsEqual(_stats));
         _stats = stats;
 

@@ -39,7 +39,7 @@ public class BattleManager : MonoBehaviour
             _requiredLevel++;
 
             _enemy = new EnemySO(_scriptableObjectHolder.GetRandom());
-            _enemy.Health += _enemy.Endurance;
+            _enemy.Health += _enemy.Stats.Endurance;
             _player.Health += _player.Stats.Endurance;
 
             OnStartBattle?.Invoke();
@@ -85,7 +85,7 @@ public class BattleManager : MonoBehaviour
 
     private bool IsPlayerFirst()
     {
-        if (_player.Stats.Dexterity >= _enemy.Dexterity)
+        if (_player.Stats.Dexterity >= _enemy.Stats.Dexterity)
             _isPlayerTurn = true;
         return _isPlayerTurn;
     }
@@ -94,7 +94,7 @@ public class BattleManager : MonoBehaviour
     {
         if (_isPlayerTurn)
         {
-            if (IsAttackSuccessful(_player.Stats.Dexterity, _enemy.Dexterity))
+            if (IsAttackSuccessful(_player.Stats.Dexterity, _enemy.Stats.Dexterity))
             {
                 _enemy.Health -= _player.Weapon.Damage + _player.Stats.Strength;
                 OnUpdateEnemyUI.Invoke(_enemy);
@@ -103,9 +103,9 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            if (IsAttackSuccessful(_enemy.Dexterity, _player.Stats.Dexterity))
+            if (IsAttackSuccessful(_enemy.Stats.Dexterity, _player.Stats.Dexterity))
             {
-                _player.Health -= _enemy.Damage + _enemy.Strength;
+                _player.Health -= _enemy.Damage + _enemy.Stats.Strength;
                 if (IsDead(_player.Health, $"{_enemy.name} won")) return false;
             }
         }

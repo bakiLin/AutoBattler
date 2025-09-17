@@ -3,11 +3,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "SO/Enemy", fileName = "New Enemy")]
 public class EnemySO : ScriptableObject
 {
-    [SerializeField]
-    private WeaponSO _reward;
-
-    [SerializeField]
-    private int _health, _damage, _strength, _dexterity, _endurance;
+    // Health
+    [SerializeField] private int _health; 
 
     public int Health { 
         get => _health; 
@@ -17,13 +14,18 @@ public class EnemySO : ScriptableObject
         }
     }
 
+    // Damage
+    [SerializeField] private int _damage;
+
     public int Damage { get => _damage; }
+    
+    // Stats
+    [SerializeField] private Stats _stats;
 
-    public int Strength { get => _strength; }
+    public Stats Stats { get => _stats; }
 
-    public int Dexterity { get => _dexterity; }
-
-    public int Endurance { get => _endurance; }
+    // Reward
+    [SerializeField] private WeaponSO _reward;
 
     public WeaponSO Reward { get => _reward; }
 
@@ -32,9 +34,7 @@ public class EnemySO : ScriptableObject
         name = enemy.name;
         _health = enemy.Health;
         _damage = enemy.Damage;
-        _strength = enemy.Strength;
-        _dexterity = enemy.Dexterity;
-        _endurance = enemy.Endurance;
+        _stats = new Stats(enemy.Stats.Strength, enemy.Stats.Dexterity, enemy.Stats.Endurance);
         _reward = enemy.Reward;
     }
 }

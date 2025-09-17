@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _health: 10
   _damage: 2
-  _strength: 2
-  _dexterity: 2
-  _endurance: 1
+  _stats:
+    Strength: 2
+    Dexterity: 2
+    Endurance: 1
   _reward: {fileID: 11400000, guid: cbffd7726eb69654c91625faa35d85da, type: 2}

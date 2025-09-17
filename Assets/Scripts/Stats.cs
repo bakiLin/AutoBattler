@@ -1,15 +1,18 @@
-public class PlayerStats
+using System;
+
+[Serializable]
+public class Stats
 {
     public int Strength, Dexterity, Endurance;
 
-    public PlayerStats(int strength, int dexterity, int endurance)
+    public Stats(int strength, int dexterity, int endurance)
     {
         Strength = strength;
         Dexterity = dexterity;
         Endurance = endurance;
     }
 
-    public bool IsEqual(PlayerStats stats)
+    public bool IsEqual(Stats stats)
     {
         if (stats == null) return false;
         if (stats.Strength == Strength && stats.Dexterity == Dexterity
