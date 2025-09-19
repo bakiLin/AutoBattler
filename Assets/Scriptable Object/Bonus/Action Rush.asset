@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8d6c757f7b1728428ececf3046184ec, type: 3}
   m_Name: Action Rush
   m_EditorClassIdentifier: 
+  _id: 1
   _bonusType: 0

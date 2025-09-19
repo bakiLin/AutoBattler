@@ -19,3 +19,4 @@ MonoBehaviour:
     Dexterity: 1
     Endurance: 2
   _reward: {fileID: 11400000, guid: 90286069e8f54884988b435dc82c1404, type: 2}
+  _bonus: {fileID: 11400000, guid: 14f8a9de45bef9e488e0114be492c050, type: 2}

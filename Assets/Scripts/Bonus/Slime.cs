@@ -1,9 +1,9 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "SO/Bonus/Slime", fileName = "Slime")]
-public class Slime : Bonus, IBonus
+public class Slime : BonusBase, IBonus
 {
-    public int Bonus(BattleData battleData)
+    public override int Bonus(BattleData battleData)
     {
         if (battleData.WeaponType == WeaponType.Slashing)
             return -battleData.WeaponDamage;

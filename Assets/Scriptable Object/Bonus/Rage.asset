@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c48dbccf596c5ef47b0d2dbe8e5533bf, type: 3}
   m_Name: Rage
   m_EditorClassIdentifier: 
+  _id: 2
   _bonusType: 0

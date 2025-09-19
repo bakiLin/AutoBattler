@@ -3,6 +3,12 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "SO/Class", fileName = "New Class")]
 public class ClassSO : ScriptableObject
 {
+    // ID
+    [SerializeField]
+    private int _id;
+
+    public int Id { get => _id; }
+
     // Health
     [SerializeField]
     private int _health;

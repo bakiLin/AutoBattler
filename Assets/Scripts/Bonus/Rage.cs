@@ -1,9 +1,9 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "SO/Bonus/Rage", fileName = "Rage")]
-public class Rage : Bonus, IBonus
+public class Rage : BonusBase, IBonus
 {
-    public int Bonus(BattleData battleData)
+    public override int Bonus(BattleData battleData)
     {
         if (battleData.Turn > 0 && battleData.Turn < 4)
             return 2;

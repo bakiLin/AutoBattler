@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f827c2264ca56ec49a8d2ae289495dbd, type: 3}
   m_Name: Dragon
   m_EditorClassIdentifier: 
+  _id: 8
   _bonusType: 0

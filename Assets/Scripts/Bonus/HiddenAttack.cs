@@ -1,9 +1,9 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "SO/Bonus/Hidden Attack", fileName = "Hidden Attack")]
-public class HiddenAttack : Bonus, IBonus
+public class HiddenAttack : BonusBase, IBonus
 {
-    public int Bonus(BattleData battleData)
+    public override int Bonus(BattleData battleData)
     {
         if (battleData.AttackStats.Dexterity > battleData.TargetStats.Dexterity)
             return 1;

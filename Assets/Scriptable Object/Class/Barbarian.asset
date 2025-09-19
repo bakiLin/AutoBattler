@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25084e90c55bb5943b293351e5c0237b, type: 3}
   m_Name: Barbarian
   m_EditorClassIdentifier: 
+  _id: 2
   _health: 6
   _weapon: {fileID: 11400000, guid: cbffd7726eb69654c91625faa35d85da, type: 2}

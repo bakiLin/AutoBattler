@@ -29,6 +29,11 @@ public class EnemySO : ScriptableObject
 
     public WeaponSO Reward { get => _reward; }
 
+    // Bonus
+    [SerializeField] private BonusBase _bonus;
+
+    public BonusBase Bonus { get => _bonus; }
+
     public EnemySO(EnemySO enemy)
     {
         name = enemy.name;
@@ -36,5 +41,6 @@ public class EnemySO : ScriptableObject
         _damage = enemy.Damage;
         _stats = new Stats(enemy.Stats.Strength, enemy.Stats.Dexterity, enemy.Stats.Endurance);
         _reward = enemy.Reward;
+        _bonus = enemy.Bonus;
     }
 }

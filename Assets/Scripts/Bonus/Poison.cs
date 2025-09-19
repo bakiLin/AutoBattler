@@ -1,9 +1,9 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "SO/Bonus/Poison", fileName = "Poison")]
-public class Poison : Bonus, IBonus
+public class Poison : BonusBase, IBonus
 {
-    public int Bonus(BattleData battleData)
+    public override int Bonus(BattleData battleData)
     {
         return battleData.Turn - 1;
     }

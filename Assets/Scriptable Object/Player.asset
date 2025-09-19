@@ -12,3 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e898cd04c107cd940b18445a48268c03, type: 3}
   m_Name: Player
   m_EditorClassIdentifier: 
+  _availableBonus:
+  - {fileID: 11400000, guid: b28fe262e572f584291ae80bea79f31b, type: 2}
+  - {fileID: 11400000, guid: 2ac7c9fa1eee1a044b62c69af42ef45a, type: 2}
+  - {fileID: 11400000, guid: 95755a57d910e4540ab7f5c25fc87238, type: 2}
+  - {fileID: 11400000, guid: 12d20e7fe370a8a41b55c40f79658e90, type: 2}
+  - {fileID: 11400000, guid: df7c25820015d8347ad79fa273efb986, type: 2}
+  - {fileID: 11400000, guid: 25d2f14ef2e7b924c9908447c6703ec3, type: 2}

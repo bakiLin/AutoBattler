@@ -16,6 +16,7 @@ public class WeaponSO : ScriptableObject
 
 public enum WeaponType
 {
+    None,
     Slashing,
     Bludgeoning,
     Piercing

@@ -22,6 +22,8 @@ public class BattleManager : MonoBehaviour
 
     private int _requiredLevel = 1;
 
+    private int _playerTurnCount = 0, _enemyTurnCount = 0;
+
     private EnemySO _enemy;
 
     private Random _random = new Random();
@@ -51,12 +53,11 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator BattleCoroutine()
     {
-        int counter = 0;
         yield return new WaitForSeconds(_statusChangeTime);
 
         while (true)
         {
-            if (counter == 0) IsPlayerFirst();
+            if (_playerTurnCount + _enemyTurnCount == 0) IsPlayerFirst();
 
             if (_isPlayerTurn) _status.text = "Player turn";
             else _status.text = $"{_enemy.name} turn";
@@ -67,7 +68,6 @@ public class BattleManager : MonoBehaviour
 
             if (!Attack()) break;
 
-            counter++;
             _isPlayerTurn = !_isPlayerTurn;
             yield return new WaitForSeconds(_statusChangeTime);
         }
@@ -94,18 +94,32 @@ public class BattleManager : MonoBehaviour
     {
         if (_isPlayerTurn)
         {
+            _playerTurnCount++;
             if (IsAttackSuccessful(_player.Stats.Dexterity, _enemy.Stats.Dexterity))
             {
-                _enemy.Health -= _player.Weapon.Damage + _player.Stats.Strength;
+                var battleData = new BattleData(_player.Stats, _enemy.Stats, _player.Weapon.Damage, _playerTurnCount, _player.Weapon.Type);
+                int damage = _player.Weapon.Damage + _player.Stats.Strength;
+                damage += _player.AttackBonus(battleData);
+                if (_enemy.Bonus?.BonusType == BonusType.Defence) 
+                    damage += _enemy.Bonus.Bonus(battleData);
+                _enemy.Health -= damage;
+
                 OnUpdateEnemyUI.Invoke(_enemy);
                 if (IsDead(_enemy.Health, "Player won")) return false;
             }
         }
         else
         {
+            _enemyTurnCount++;
             if (IsAttackSuccessful(_enemy.Stats.Dexterity, _player.Stats.Dexterity))
             {
-                _player.Health -= _enemy.Damage + _enemy.Stats.Strength;
+                var battleData = new BattleData(_enemy.Stats, _player.Stats, _enemy.Damage, _enemyTurnCount, WeaponType.None);
+                int damage = _enemy.Damage + _enemy.Stats.Strength;
+                if (_enemy.Bonus?.BonusType == BonusType.Attack)
+                    damage += _enemy.Bonus.Bonus(battleData);
+                damage += _player.DefenceBonus(battleData);
+                _player.Health -= damage;
+
                 if (IsDead(_player.Health, $"{_enemy.name} won")) return false;
             }
         }
@@ -116,6 +130,9 @@ public class BattleManager : MonoBehaviour
     {
         if (health == 0)
         {
+            _playerTurnCount = 0;
+            _enemyTurnCount = 0;
+
             _status.text = status;
             return true;
         }

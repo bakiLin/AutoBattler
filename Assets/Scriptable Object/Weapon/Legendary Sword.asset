@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cf05cda5e51a0641a8a68902f8ddcac, type: 3}
   m_Name: Legendary Sword
   m_EditorClassIdentifier: 
-  _type: 0
+  _type: 1
   _damage: 10

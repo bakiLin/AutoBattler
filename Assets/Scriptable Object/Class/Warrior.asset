@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25084e90c55bb5943b293351e5c0237b, type: 3}
   m_Name: Warrior
   m_EditorClassIdentifier: 
+  _id: 1
   _health: 5
   _weapon: {fileID: 11400000, guid: fb0d8a98d44a93a4e8d7cc31965c5e4c, type: 2}
