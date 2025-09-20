@@ -131,13 +131,15 @@ public class PlayerSO : ScriptableObject
         return false;
     }
 
-    private int CalculateLevel()
+    public int CalculateLevel()
     {
         int level = 0;
         foreach (var value in _classDictionary.Values)
             level += value.Level;
         return level;
     }
+
+    public int GetActiveLevel() => _playerDataCopy.CalculateLevel();
 
     public int GetHealth()
     {

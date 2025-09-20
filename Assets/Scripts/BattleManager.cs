@@ -22,7 +22,7 @@ public class BattleManager : MonoBehaviour
 
     private int _requiredLevel = 1;
 
-    private int _playerTurnCount = 0, _enemyTurnCount = 0;
+    private int _turnCount = 0, _playerTurnCount = 0, _enemyTurnCount = 0;
 
     private EnemySO _enemy;
 
@@ -38,7 +38,7 @@ public class BattleManager : MonoBehaviour
     {
         if (_player.IsReadyToBattle(_requiredLevel))
         {
-            _requiredLevel++;
+            if (_requiredLevel < 3) _requiredLevel++;
 
             _enemy = new EnemySO(_scriptableObjectHolder.GetRandom());
             _enemy.Health += _enemy.Stats.Endurance;
@@ -57,7 +57,8 @@ public class BattleManager : MonoBehaviour
 
         while (true)
         {
-            if (_playerTurnCount + _enemyTurnCount == 0) IsPlayerFirst();
+            if (_turnCount == 0) IsPlayerFirst();
+            _turnCount++;
 
             if (_isPlayerTurn) _status.text = "Player turn";
             else _status.text = $"{_enemy.name} turn";
@@ -94,9 +95,9 @@ public class BattleManager : MonoBehaviour
     {
         if (_isPlayerTurn)
         {
-            _playerTurnCount++;
             if (IsAttackSuccessful(_player.Stats.Dexterity, _enemy.Stats.Dexterity))
             {
+                _playerTurnCount++;
                 var battleData = new BattleData(_player.Stats, _enemy.Stats, _player.Weapon.Damage, _playerTurnCount, _player.Weapon.Type);
                 int damage = _player.Weapon.Damage + _player.Stats.Strength;
                 damage += _player.ActivateBonus(battleData, BonusType.Attack);
@@ -109,9 +110,9 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            _enemyTurnCount++;
             if (IsAttackSuccessful(_enemy.Stats.Dexterity, _player.Stats.Dexterity))
             {
+                _enemyTurnCount++;
                 var battleData = new BattleData(_enemy.Stats, _player.Stats, _enemy.Damage, _enemyTurnCount, WeaponType.None);
                 int damage = _enemy.Damage + _enemy.Stats.Strength;
                 damage += _enemy.ActivateBonus(battleData, BonusType.Attack);

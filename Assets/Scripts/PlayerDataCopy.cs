@@ -46,4 +46,12 @@ public class PlayerDataCopy
         foreach (var item in _bonusList)
             bonusList.Add(item);
     }
+
+    public int CalculateLevel()
+    {
+        int level = 0;
+        foreach (var value in _classDictionary.Values)
+            level += value.Level;
+        return level;
+    }
 }

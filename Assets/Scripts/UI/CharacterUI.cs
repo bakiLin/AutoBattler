@@ -30,6 +30,9 @@ public class CharacterUI : MonoBehaviour
     [SerializeField] private GameObject _warriorButton;
     [SerializeField] private GameObject _barbarianButton;
 
+    [Header("BONUS")]
+    [SerializeField] private TextMeshProUGUI[] _bonus;
+
     private void OnEnable()
     {
         _player.OnUpdateClass += UpdateClassUI;
@@ -58,6 +61,7 @@ public class CharacterUI : MonoBehaviour
         ResetButtons();
         if (characterClass != null) SetButtons(characterClass.name);
         UpdateBonus();
+        SetBonus();
     }
 
     private void UpdateStatsUI()
@@ -85,11 +89,20 @@ public class CharacterUI : MonoBehaviour
         return "0";
     }
 
-    private void ResetButtons()
+    public void ResetButtons()
     {
-        _thiefButton.SetActive(true);
-        _warriorButton.SetActive(true);
-        _barbarianButton.SetActive(true);
+        if (_player.GetActiveLevel() < 3)
+        {
+            _thiefButton.SetActive(true);
+            _warriorButton.SetActive(true);
+            _barbarianButton.SetActive(true);
+        }
+        else
+        {
+            _thiefButton.SetActive(false);
+            _warriorButton.SetActive(false);
+            _barbarianButton.SetActive(false);
+        }
     }
 
     private void SetButtons(string className)
@@ -97,5 +110,11 @@ public class CharacterUI : MonoBehaviour
         if (className == _scriptableObjectHolder.Thief.name) _thiefButton.SetActive(false);
         else if (className == _scriptableObjectHolder.Warrior.name) _warriorButton.SetActive(false);
         else if (className == _scriptableObjectHolder.Barbarian.name) _barbarianButton.SetActive(false);
+    }
+
+    private void SetBonus()
+    {
+        for (int i = 0; i < _player.BonusList.Count; i++)
+            _bonus[i].text = _player.BonusList[i].name.ToString();
     }
 }
