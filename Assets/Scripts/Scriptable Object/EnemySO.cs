@@ -43,4 +43,11 @@ public class EnemySO : ScriptableObject
         _reward = enemy.Reward;
         _bonus = enemy.Bonus;
     }
+
+    public int ActivateBonus(BattleData battleData, BonusType requiredBonusType)
+    {
+        if (Bonus?.BonusType == requiredBonusType)
+            return Bonus.Bonus(battleData);
+        return 0;
+    }
 }

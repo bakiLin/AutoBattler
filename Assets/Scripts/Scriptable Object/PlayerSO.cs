@@ -19,7 +19,7 @@ public class PlayerSO : ScriptableObject
     }
 
     // Stats
-    private Stats _stats, _statsCopy;
+    private Stats _stats;
 
     public Stats Stats { get => _stats; }
 
@@ -40,9 +40,7 @@ public class PlayerSO : ScriptableObject
     }
 
     // Bonus
-    [SerializeField] private BonusBase[] _availableBonus;
-
-    private List<BonusBase> _bonusList, _bonusCopy;
+    private List<BonusBase> _bonusList;
 
     public List<BonusBase> BonusList { get => _bonusList; }
 
@@ -52,20 +50,20 @@ public class PlayerSO : ScriptableObject
     public event Action<ClassSO> OnUpdateClass;
 
     // Other
+    [SerializeField] private ScriptableObjectHolder _holder;
+
     private Random _random = new Random();
 
-    private Dictionary<string, ClassSO> _dictionaryCopy;
+    private PlayerDataCopy _playerDataCopy;
 
     private void OnEnable()
     {
         _health = 0;
         _stats = null;
-        _statsCopy = null;
         _weapon = null;
         _classDictionary = new Dictionary<string, ClassSO>();
-        _dictionaryCopy = new Dictionary<string, ClassSO>();
         _bonusList = new List<BonusBase>();
-        _bonusCopy = new List<BonusBase>();
+        _playerDataCopy = new PlayerDataCopy(null, _classDictionary, _bonusList);
     }
 
     public void GenerateStats()
@@ -80,22 +78,7 @@ public class PlayerSO : ScriptableObject
 
     public void SelectClass(ClassSO characterClass)
     {
-        _classDictionary.Clear();
-        foreach (var pair in _dictionaryCopy)
-        {
-            _classDictionary.Add(pair.Key, pair.Value);
-            _classDictionary[pair.Key] = new ClassSO(pair.Value);
-        }
-
-        _bonusList.Clear();
-        foreach (var item in _bonusCopy)
-            _bonusList.Add(item);
-
-        if (_statsCopy != null)
-        {
-            _stats = null;
-            _stats = new Stats(_statsCopy.Strength, _statsCopy.Dexterity, _statsCopy.Endurance);
-        }
+        _playerDataCopy.GetPlayerDataCopy(ref _stats, ref _classDictionary, ref _bonusList);
 
         if (!_classDictionary.ContainsKey(characterClass.name))
             _classDictionary.Add(characterClass.name, new ClassSO(characterClass));
@@ -118,38 +101,27 @@ public class PlayerSO : ScriptableObject
         }
 
         _health = GetHealth();
-        if (_dictionaryCopy.Count == 0) _weapon = characterClass.Weapon;
+        if (_playerDataCopy.ClassDictionary.Count == 0) _weapon = characterClass.Weapon;
 
         if (_stats != null) OnUpdateStats?.Invoke();
         OnUpdateClass?.Invoke(characterClass);
     }
 
-    public int AttackBonus(BattleData battleData)
+    public int ActivateBonus(BattleData battleData, BonusType requiredBonusType)
     {
         int damage = 0;
         foreach (var bonus in _bonusList)
-        {
-            if (bonus.BonusType == BonusType.Attack)
-                damage += bonus.Bonus(battleData);
-        }
-        return damage;
-    }
-
-    public int DefenceBonus(BattleData battleData)
-    {
-        int damage = 0;
-        foreach (var bonus in _bonusList)
-        {
-            if (bonus.BonusType == BonusType.Defence)
-                damage += bonus.Bonus(battleData);
-        }
+            damage += bonus.BonusType == requiredBonusType ? bonus.Bonus(battleData) : 0;
         return damage;
     }
 
     private void CheckLevelToGetBonus(int classLevel, int[] level, int[] bonusId)
     {
         for (int i = 0; i < level.Length; i++)
-            if (classLevel == level[i]) _bonusList.Add(Array.Find(_availableBonus, bonus => bonus.Id == bonusId[i]));
+        {
+            if (classLevel == level[i]) 
+                _bonusList.Add(Array.Find(_holder.AvailableBonus, bonus => bonus.Id == bonusId[i]));
+        }
     }
 
     public bool IsReadyToBattle(int requiredLevel)
@@ -181,20 +153,8 @@ public class PlayerSO : ScriptableObject
         OnUpdateClass?.Invoke(null);
     }
 
-    public void CopyDictionary()
+    public void CopyPlayerData()
     {
-        _dictionaryCopy.Clear();
-        foreach (var pair in _classDictionary)
-        {
-            _dictionaryCopy.Add(pair.Key, pair.Value);
-            _dictionaryCopy[pair.Key] = new ClassSO(pair.Value);
-        }
-
-        _bonusCopy.Clear();
-        foreach (var item in _bonusList)
-            _bonusCopy.Add(item);
-
-        _statsCopy = null;
-        _statsCopy = new Stats(_stats.Strength, _stats.Dexterity, _stats.Endurance);
+        _playerDataCopy = new PlayerDataCopy(_stats, _classDictionary, _bonusList);
     }
 }

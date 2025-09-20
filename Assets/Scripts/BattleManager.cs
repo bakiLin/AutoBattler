@@ -77,7 +77,7 @@ public class BattleManager : MonoBehaviour
         if (_player.Health > 0)
         {
             _player.RestoreHealth();
-            _player.CopyDictionary();
+            _player.CopyPlayerData();
             OnEndBattle?.Invoke(_enemy.Reward);
         }
         else _status.text = "Game Over";
@@ -99,9 +99,8 @@ public class BattleManager : MonoBehaviour
             {
                 var battleData = new BattleData(_player.Stats, _enemy.Stats, _player.Weapon.Damage, _playerTurnCount, _player.Weapon.Type);
                 int damage = _player.Weapon.Damage + _player.Stats.Strength;
-                damage += _player.AttackBonus(battleData);
-                if (_enemy.Bonus?.BonusType == BonusType.Defence) 
-                    damage += _enemy.Bonus.Bonus(battleData);
+                damage += _player.ActivateBonus(battleData, BonusType.Attack);
+                damage += _enemy.ActivateBonus(battleData, BonusType.Defence);
                 _enemy.Health -= damage;
 
                 OnUpdateEnemyUI.Invoke(_enemy);
@@ -115,9 +114,8 @@ public class BattleManager : MonoBehaviour
             {
                 var battleData = new BattleData(_enemy.Stats, _player.Stats, _enemy.Damage, _enemyTurnCount, WeaponType.None);
                 int damage = _enemy.Damage + _enemy.Stats.Strength;
-                if (_enemy.Bonus?.BonusType == BonusType.Attack)
-                    damage += _enemy.Bonus.Bonus(battleData);
-                damage += _player.DefenceBonus(battleData);
+                damage += _enemy.ActivateBonus(battleData, BonusType.Attack);
+                damage += _player.ActivateBonus(battleData, BonusType.Defence);
                 _player.Health -= damage;
 
                 if (IsDead(_player.Health, $"{_enemy.name} won")) return false;

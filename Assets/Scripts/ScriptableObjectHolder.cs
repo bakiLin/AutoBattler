@@ -1,7 +1,8 @@
 using UnityEngine;
 using Random = System.Random;
 
-public class ScriptableObjectHolder : MonoBehaviour
+[CreateAssetMenu(menuName = "SO/SO Holder", fileName = "SO Holder")]
+public class ScriptableObjectHolder : ScriptableObject
 {
     [Header("CLASS")]
     [SerializeField] private ClassSO _thief;
@@ -11,13 +12,18 @@ public class ScriptableObjectHolder : MonoBehaviour
     [Header("ENEMY")]
     [SerializeField] private EnemySO[] _enemies;
 
-    private Random _random = new Random();
+    [Header("BONUS")]
+    [SerializeField] private BonusBase[] _availableBonus;
 
     public ClassSO Thief { get => _thief; }
 
     public ClassSO Warrior { get => _warrior; }
 
     public ClassSO Barbarian { get => _barbarian; }
+
+    public BonusBase[] AvailableBonus { get => _availableBonus; }
+
+    private Random _random = new Random();
 
     public EnemySO GetRandom()
     {
