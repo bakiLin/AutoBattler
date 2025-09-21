@@ -15,6 +15,7 @@ public class BattleUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _playerStrength;
     [SerializeField] private TextMeshProUGUI _playerDexterity;
     [SerializeField] private TextMeshProUGUI _playerEndurance;
+    [SerializeField] private TextMeshProUGUI[] _playerBonus;
 
     [Header("ENEMY")]
     [SerializeField] private TextMeshProUGUI _enemyName;
@@ -23,6 +24,7 @@ public class BattleUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _enemyStrength;
     [SerializeField] private TextMeshProUGUI _enemyDexterity;
     [SerializeField] private TextMeshProUGUI _enemyEndurance;
+    [SerializeField] private TextMeshProUGUI _enemyBonus;
 
     private void OnEnable()
     {
@@ -43,6 +45,9 @@ public class BattleUI : MonoBehaviour
         _playerStrength.text = _player.Stats.Strength.ToString();
         _playerDexterity.text = _player.Stats.Dexterity.ToString();
         _playerEndurance.text = _player.Stats.Endurance.ToString();
+
+        for (int i = 0; i < _player.BonusList.Count; i++)
+            _playerBonus[i].text = _player.BonusList[i].name.ToString();
     }
 
     private void UpdateEnemyStats(EnemySO enemy)
@@ -53,5 +58,8 @@ public class BattleUI : MonoBehaviour
         _enemyStrength.text = enemy.Stats.Strength.ToString();
         _enemyDexterity.text = enemy.Stats.Dexterity.ToString();
         _enemyEndurance.text = enemy.Stats.Endurance.ToString();
+
+        if (enemy.Bonus != null) _enemyBonus.text = enemy.Bonus.name.ToString();
+        else _enemyBonus.text = "";
     }
 }

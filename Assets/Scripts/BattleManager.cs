@@ -85,6 +85,7 @@ public class BattleManager : MonoBehaviour
         {
             _status.text = "Game Over";
             yield return new WaitForSeconds(_statusChangeTime);
+            _player.ResetCharacter();
             OnGameOver?.Invoke();
         }
     }

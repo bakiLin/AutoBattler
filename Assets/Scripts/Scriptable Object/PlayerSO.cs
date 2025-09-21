@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = System.Random;
 
 [CreateAssetMenu(menuName = "SO/Player", fileName = "New Player")]
 public class PlayerSO : ScriptableObject
@@ -40,14 +39,16 @@ public class PlayerSO : ScriptableObject
 
     public event Action<ClassSO> OnUpdateClass;
 
-    // Other
     [SerializeField] private ScriptableObjectHolder _holder;
-
-    //private Random _random = new Random();
 
     private PlayerData _data, _dataCopy;
 
-    private void OnEnable()
+    private void OnEnable() 
+    {
+        ResetCharacter();
+    }
+
+    public void ResetCharacter()
     {
         _health = 0;
         _weapon = null;
