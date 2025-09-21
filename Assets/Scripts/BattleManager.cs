@@ -22,7 +22,7 @@ public class BattleManager : MonoBehaviour
 
     private int _requiredLevel = 1;
 
-    private int _turnCount = 0, _playerTurnCount = 0, _enemyTurnCount = 0;
+    private int _turnCount, _playerTurnCount, _enemyTurnCount, _winCount;
 
     private EnemySO _enemy;
 
@@ -53,6 +53,7 @@ public class BattleManager : MonoBehaviour
 
     private IEnumerator BattleCoroutine()
     {
+        _status.text = "";
         yield return new WaitForSeconds(_statusChangeTime);
 
         while (true)
@@ -77,6 +78,17 @@ public class BattleManager : MonoBehaviour
 
         if (_player.Health > 0)
         {
+            _winCount++;
+
+            if (_winCount == 5)
+            {
+                _status.text = $"Victory";
+                yield return new WaitForSeconds(_statusChangeTime);
+                _player.ResetCharacter();
+                OnGameOver?.Invoke();
+                yield break;
+            }
+
             _player.RestoreHealth();
             _player.CopyPlayerData();
             OnEndBattle?.Invoke(_enemy.Reward);

@@ -974,7 +974,7 @@ MonoBehaviour:
   _player: {fileID: 11400000, guid: dcd10e059fb15614ebbe16a8a8065d61, type: 2}
   _scriptableObjectHolder: {fileID: 11400000, guid: be0bf3aaeaf9d6c4d8c2558d9d5645d1, type: 2}
   _status: {fileID: 1984615925}
-  _statusChangeTime: 0.3
+  _statusChangeTime: 1
 --- !u!1 &120295345
 GameObject:
   m_ObjectHideFlags: 0
