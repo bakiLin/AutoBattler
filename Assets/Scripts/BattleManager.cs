@@ -28,7 +28,7 @@ public class BattleManager : MonoBehaviour
 
     private Random _random = new Random();
 
-    public Action OnStartBattle;
+    public Action OnStartBattle, OnGameOver;
 
     public Action<WeaponSO> OnEndBattle;
 
@@ -81,7 +81,12 @@ public class BattleManager : MonoBehaviour
             _player.CopyPlayerData();
             OnEndBattle?.Invoke(_enemy.Reward);
         }
-        else _status.text = "Game Over";
+        else
+        {
+            _status.text = "Game Over";
+            yield return new WaitForSeconds(_statusChangeTime);
+            OnGameOver?.Invoke();
+        }
     }
 
     private bool IsPlayerFirst()

@@ -13,6 +13,7 @@ public class WindowManager : MonoBehaviour
     [SerializeField] private GameObject _characterWindow;
     [SerializeField] private GameObject _battleWindow;
     [SerializeField] private GameObject _weaponWindow;
+    [SerializeField] private GameObject _gameOverWindow;
 
     [Header("BUTTON")]
     [SerializeField] private GameObject _generateButton;
@@ -23,12 +24,14 @@ public class WindowManager : MonoBehaviour
     {
         _battleManager.OnStartBattle += BattleWindow;
         _battleManager.OnEndBattle += WeaponWindow;
+        _battleManager.OnGameOver += GameOver;
     }
 
     private void OnDisable()
     {
         _battleManager.OnStartBattle -= BattleWindow;
         _battleManager.OnEndBattle -= WeaponWindow;
+        _battleManager.OnGameOver -= GameOver;
     }
 
     private void BattleWindow()
@@ -57,5 +60,14 @@ public class WindowManager : MonoBehaviour
         _weaponWindow.SetActive(false);
         _characterWindow.SetActive(true);
         _battleButton.SetActive(true);
+    }
+
+    private void GameOver()
+    {
+        _characterWindow.SetActive(false);
+        _generateButton.SetActive(false);
+        _battleButton.SetActive(false);
+        _battleWindow.SetActive(false);
+        _gameOverWindow.SetActive(true);
     }
 }

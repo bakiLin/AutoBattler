@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ButtonManager : MonoBehaviour
 {
@@ -13,5 +14,10 @@ public class ButtonManager : MonoBehaviour
     public void SelectClass(ClassSO characterClass)
     {
         _player.SelectClass(characterClass);
+    }
+
+    public void Replay()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
