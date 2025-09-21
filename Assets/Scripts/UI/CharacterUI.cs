@@ -114,6 +114,9 @@ public class CharacterUI : MonoBehaviour
 
     private void SetBonus()
     {
+        foreach (var bonus in _bonus)
+            bonus.text = "";
+
         for (int i = 0; i < _player.BonusList.Count; i++)
             _bonus[i].text = _player.BonusList[i].name.ToString();
     }
