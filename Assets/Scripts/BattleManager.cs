@@ -28,11 +28,18 @@ public class BattleManager : MonoBehaviour
 
     private Random _random = new Random();
 
+    private AudioManager _audioManager;
+
     public Action OnStartBattle, OnGameOver;
 
     public Action<WeaponSO> OnEndBattle;
 
-    public Action<EnemySO> OnUpdateEnemyUI; 
+    public Action<EnemySO> OnUpdateEnemyUI;
+
+    private void Start()
+    {
+        _audioManager = AudioManager.Instance;
+    }
 
     public void StartBattle()
     {
@@ -186,10 +193,12 @@ public class BattleManager : MonoBehaviour
 
         if (chance <= targetDexterity)
         {
+            _audioManager.Play("miss");
             _status.text = "Miss";
             return false;
         }
 
+        _audioManager.Play("hit");
         _status.text = "Success";
         return true;
     }

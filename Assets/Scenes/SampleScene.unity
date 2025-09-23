@@ -2620,6 +2620,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _player: {fileID: 11400000, guid: dcd10e059fb15614ebbe16a8a8065d61, type: 2}
+  _button:
+  - {fileID: 1166642843}
+  - {fileID: 71924437}
+  - {fileID: 1932084207}
+  - {fileID: 269651739}
+  - {fileID: 1474155188}
+  - {fileID: 1463204383}
+  - {fileID: 899389077}
 --- !u!1 &357187819
 GameObject:
   m_ObjectHideFlags: 0
@@ -10071,8 +10079,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 341481060}
-        m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
+      - m_Target: {fileID: 1855394005}
+        m_TargetAssemblyTypeName: WindowManager, Assembly-CSharp
         m_MethodName: Replay
         m_Mode: 1
         m_Arguments:
@@ -13074,6 +13082,71 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2139139748}
   m_CullTransparentMesh: 1
+--- !u!1 &2144099751
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2144099752}
+  - component: {fileID: 2144099753}
+  m_Layer: 0
+  m_Name: Audio Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2144099752
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144099751}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2144099753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2144099751}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6928039e674f9404db9fed85359881d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sounds:
+  - Name: theme
+    Clip: {fileID: 8300000, guid: 35710416e52aa43448f3b06a866f73bc, type: 3}
+    Volume: 0.06
+    Loop: 1
+    Source: {fileID: 0}
+  - Name: button
+    Clip: {fileID: 8300000, guid: 3a3631c3b7e74b444ab0cd8124f05575, type: 3}
+    Volume: 1
+    Loop: 0
+    Source: {fileID: 0}
+  - Name: hit
+    Clip: {fileID: 8300000, guid: 593a989148683c24bb846f504401539a, type: 3}
+    Volume: 1
+    Loop: 0
+    Source: {fileID: 0}
+  - Name: miss
+    Clip: {fileID: 8300000, guid: 9a9cbb991490d0a4296c93a0ac9ac6e4, type: 3}
+    Volume: 1
+    Loop: 0
+    Source: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -13082,3 +13155,4 @@ SceneRoots:
   - {fileID: 1954529723}
   - {fileID: 1296031975}
   - {fileID: 2032410798}
+  - {fileID: 2144099752}

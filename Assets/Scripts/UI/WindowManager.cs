@@ -74,6 +74,7 @@ public class WindowManager : MonoBehaviour
                 var button = _takeWeaponButton.GetComponent<Button>();
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() => {
+                    AudioManager.Instance.Play("button");
                     _player.Weapon = weapon;
                     CharacterWindow();
                 });
@@ -98,19 +99,20 @@ public class WindowManager : MonoBehaviour
             {
                 var button = _replayButton.GetComponent<Button>();
                 button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() =>
-                {
-                    _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
-                    _replayButton.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
-                    .OnComplete(() =>
-                    {
-                        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-                    });
-                });
+                button.onClick.AddListener(() => Replay());
 
                 MoveUIDown(ref _replayButton, 0f);
                 _status.DOAnchorPosY(-90f, _animationTime).SetEase(Ease.Linear);
             });
+    }
+
+    public void Replay()
+    {
+        AudioManager.Instance.Play("button");
+        _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
+        _replayButton.DOAnchorPosY(1200f, _animationTime)
+            .SetEase(Ease.InBack)
+            .OnComplete(() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex));
     }
 
     private void MoveUIDown(ref RectTransform rectTransform, float position)
