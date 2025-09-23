@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "SO/Player", fileName = "New Player")]
-public class PlayerSO : ScriptableObject
+public class PlayerSO : ScriptableObject, ICharacter
 {
     public Stats Stats { get => _data.Stats; }
 

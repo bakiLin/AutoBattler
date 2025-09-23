@@ -76,8 +76,7 @@ public class BattleManager : MonoBehaviour
             else if (_turnCount == 20)
             {
                 _status.text = "We'll call it a draw";
-                _player.ResetCharacter();
-                OnGameOver?.Invoke();
+                GameOver();
                 yield break;
             }
             _turnCount++;
@@ -105,8 +104,7 @@ public class BattleManager : MonoBehaviour
             {
                 _status.text = $"Victory";
                 yield return new WaitForSeconds(_statusChangeTime);
-                _player.ResetCharacter();
-                OnGameOver?.Invoke();
+                GameOver();
                 yield break;
             }
 
@@ -118,9 +116,14 @@ public class BattleManager : MonoBehaviour
         {
             _status.text = "Game Over";
             yield return new WaitForSeconds(_statusChangeTime);
-            _player.ResetCharacter();
-            OnGameOver?.Invoke();
+            GameOver();
         }
+    }
+
+    private void GameOver()
+    {
+        _player.ResetCharacter();
+        OnGameOver?.Invoke();
     }
 
     private bool IsPlayerFirst()
@@ -137,12 +140,7 @@ public class BattleManager : MonoBehaviour
             if (IsAttackSuccessful(_player.Stats.Dexterity, _enemy.Stats.Dexterity))
             {
                 _playerTurnCount++;
-                var battleData = new BattleData(_player.Stats, _enemy.Stats, _player.Weapon.Damage, _playerTurnCount, _player.Weapon.Type);
-                int damage = _player.Weapon.Damage + _player.Stats.Strength;
-                damage += _player.ActivateBonus(battleData, BonusType.Attack);
-                damage += _enemy.ActivateBonus(battleData, BonusType.Defence);
-                _enemy.Health -= damage;
-
+                _enemy.Health -= CalculateDamage(_player, _enemy, _player.Weapon.Damage, _playerTurnCount, _player.Weapon.Type);
                 OnUpdateEnemyUI.Invoke(_enemy);
                 if (IsDead(_enemy.Health, "Player won")) return false;
             }
@@ -152,16 +150,20 @@ public class BattleManager : MonoBehaviour
             if (IsAttackSuccessful(_enemy.Stats.Dexterity, _player.Stats.Dexterity))
             {
                 _enemyTurnCount++;
-                var battleData = new BattleData(_enemy.Stats, _player.Stats, _enemy.Damage, _enemyTurnCount, WeaponType.None);
-                int damage = _enemy.Damage + _enemy.Stats.Strength;
-                damage += _enemy.ActivateBonus(battleData, BonusType.Attack);
-                damage += _player.ActivateBonus(battleData, BonusType.Defence);
-                _player.Health -= damage;
-
+                _player.Health -= CalculateDamage(_enemy, _player, _enemy.Damage, _enemyTurnCount, WeaponType.None);
                 if (IsDead(_player.Health, $"{_enemy.name} won")) return false;
             }
         }
         return true;
+    }
+
+    private int CalculateDamage(ICharacter attack, ICharacter target, int weaponDamage, int turnCount, WeaponType weaponType)
+    {
+        var battleData = new BattleData(attack.Stats, target.Stats, weaponDamage, turnCount, weaponType);
+        int damage = weaponDamage + attack.Stats.Strength;
+        damage += attack.ActivateBonus(battleData, BonusType.Attack);
+        damage += target.ActivateBonus(battleData, BonusType.Defence);
+        return damage;
     }
 
     private bool IsDead(int health, string status)

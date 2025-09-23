@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "SO/Enemy", fileName = "New Enemy")]
-public class EnemySO : ScriptableObject
+public class EnemySO : ScriptableObject, ICharacter
 {
     // Health
     [SerializeField] private int _health; 
