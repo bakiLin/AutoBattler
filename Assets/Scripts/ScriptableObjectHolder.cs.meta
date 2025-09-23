@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: d9f9f4423c1fd334481665a9c4f66fa3
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _thief: {fileID: 11400000, guid: 8177a2945302fc646a2b46a61ea3f23b, type: 2}
+  - _warrior: {fileID: 11400000, guid: 8a9711ae915641a47bcc8cb7ea494e21, type: 2}
+  - _barbarian: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
