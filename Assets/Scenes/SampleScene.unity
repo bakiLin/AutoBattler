@@ -802,7 +802,8 @@ MonoBehaviour:
   _player: {fileID: 11400000, guid: dcd10e059fb15614ebbe16a8a8065d61, type: 2}
   _scriptableObjectHolder: {fileID: 11400000, guid: be0bf3aaeaf9d6c4d8c2558d9d5645d1, type: 2}
   _status: {fileID: 1984615925}
-  _statusChangeTime: 1
+  _statusChangeTime: 1.2
+  _startDelay: 3
 --- !u!1 &120295345
 GameObject:
   m_ObjectHideFlags: 0
@@ -1928,7 +1929,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &245141161
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1936,13 +1937,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 245141160}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1984615924}
-  m_Father: {fileID: 1937048279}
+  m_Father: {fileID: 1263044088}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -6469,42 +6470,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 851376041}
   m_CullTransparentMesh: 1
---- !u!1 &864582495
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 864582496}
-  m_Layer: 5
-  m_Name: Game Over (Window)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!224 &864582496
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 864582495}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1463204382}
-  m_Father: {fileID: 1263044088}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &893299560
 GameObject:
   m_ObjectHideFlags: 0
@@ -8378,9 +8343,10 @@ RectTransform:
   m_Children:
   - {fileID: 1289287372}
   - {fileID: 1474155187}
+  - {fileID: 245141161}
   - {fileID: 1937048279}
   - {fileID: 1288898824}
-  - {fileID: 864582496}
+  - {fileID: 1463204382}
   m_Father: {fileID: 1954529723}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -8942,7 +8908,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1289287372
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10040,7 +10006,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1463204382
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10048,13 +10014,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1463204381}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 671219025}
-  m_Father: {fileID: 864582496}
+  m_Father: {fileID: 1263044088}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -10189,7 +10155,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1474155187
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11472,13 +11438,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _battleManager: {fileID: 102741843}
   _player: {fileID: 11400000, guid: dcd10e059fb15614ebbe16a8a8065d61, type: 2}
-  _characterWindow: {fileID: 1289287371}
-  _battleWindow: {fileID: 1937048278}
-  _weaponWindow: {fileID: 1288898823}
-  _gameOverWindow: {fileID: 864582495}
+  _animationTime: 0.8
+  _characterWindow: {fileID: 1289287372}
+  _battleWindow: {fileID: 1937048279}
+  _weaponWindow: {fileID: 1288898824}
+  _status: {fileID: 245141161}
   _generateButton: {fileID: 269651737}
   _takeWeaponButton: {fileID: 781727309}
-  _battleButton: {fileID: 1474155186}
+  _battleButton: {fileID: 1474155187}
+  _replayButton: {fileID: 1463204382}
 --- !u!1 &1912643168
 GameObject:
   m_ObjectHideFlags: 0
@@ -11813,7 +11781,6 @@ RectTransform:
   - {fileID: 832776415}
   - {fileID: 772032281}
   - {fileID: 56533512}
-  - {fileID: 245141161}
   m_Father: {fileID: 1263044088}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

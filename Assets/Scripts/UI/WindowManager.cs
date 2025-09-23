@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class WindowManager : MonoBehaviour
 {
@@ -9,16 +11,20 @@ public class WindowManager : MonoBehaviour
     [SerializeField]
     private PlayerSO _player;
 
+    [SerializeField]
+    private float _animationTime;
+
     [Header("WINDOW")]
-    [SerializeField] private GameObject _characterWindow;
-    [SerializeField] private GameObject _battleWindow;
-    [SerializeField] private GameObject _weaponWindow;
-    [SerializeField] private GameObject _gameOverWindow;
+    [SerializeField] private RectTransform _characterWindow;
+    [SerializeField] private RectTransform _battleWindow;
+    [SerializeField] private RectTransform _weaponWindow;
+    [SerializeField] private RectTransform _status;
 
     [Header("BUTTON")]
     [SerializeField] private GameObject _generateButton;
     [SerializeField] private GameObject _takeWeaponButton;
-    [SerializeField] private GameObject _battleButton;
+    [SerializeField] private RectTransform _battleButton;
+    [SerializeField] private RectTransform _replayButton;
 
     private void OnEnable()
     {
@@ -34,40 +40,86 @@ public class WindowManager : MonoBehaviour
         _battleManager.OnGameOver -= GameOver;
     }
 
+    private void Start()
+    {
+        Invoke(nameof(ShowStartUI), .2f);
+    }
+
+    private void ShowStartUI()
+    {
+        MoveUIDown(ref _characterWindow, 0f);
+        MoveUIDown(ref _battleButton, -80f);
+    }
+
     private void BattleWindow()
     {
-        _characterWindow.SetActive(false);
-        _generateButton.SetActive(false);
-        _battleButton.SetActive(false);
-        _battleWindow.SetActive(true);
+        _characterWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
+        _battleButton.DOAnchorPosY(1200f, _animationTime)
+            .SetEase(Ease.Linear)
+            .OnComplete(() => 
+            {
+                _generateButton.SetActive(false);
+
+                MoveUIDown(ref _battleWindow, 0f);
+                MoveUIDown(ref _status, -90f);
+            });
     }
 
     private void WeaponWindow(WeaponSO weapon)
     {
-        var button = _takeWeaponButton.GetComponent<Button>();
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(() => {
-            _player.Weapon = weapon;
-            CharacterWindow();
-        });
+        _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
+        _battleWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
+            .OnComplete(() =>
+            {
+                var button = _takeWeaponButton.GetComponent<Button>();
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() => {
+                    _player.Weapon = weapon;
+                    CharacterWindow();
+                });
 
-        _battleWindow.SetActive(false);
-        _weaponWindow.SetActive(true);
+                MoveUIDown(ref _status, -90f);
+                MoveUIDown(ref _weaponWindow, 0f);
+            });
     }
 
     public void CharacterWindow()
     {
-        _weaponWindow.SetActive(false);
-        _characterWindow.SetActive(true);
-        _battleButton.SetActive(true);
+        _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
+        _weaponWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
+            .OnComplete(() => ShowStartUI());
     }
 
     private void GameOver()
     {
-        _characterWindow.SetActive(false);
-        _generateButton.SetActive(false);
-        _battleButton.SetActive(false);
-        _battleWindow.SetActive(false);
-        _gameOverWindow.SetActive(true);
+        _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
+        _battleWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
+            .OnComplete(() =>
+            {
+                var button = _replayButton.GetComponent<Button>();
+                button.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() =>
+                {
+                    _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
+                    _replayButton.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
+                    .OnComplete(() =>
+                    {
+                        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                    });
+                });
+
+                MoveUIDown(ref _replayButton, 0f);
+                _status.DOAnchorPosY(-90f, _animationTime).SetEase(Ease.Linear);
+            });
+    }
+
+    private void MoveUIDown(ref RectTransform rectTransform, float position)
+    {
+        var anchoredPosition = rectTransform.anchoredPosition;
+        anchoredPosition.y = 1200f;
+        rectTransform.anchoredPosition = anchoredPosition;
+
+        rectTransform.gameObject.SetActive(true);
+        rectTransform.DOAnchorPosY(position, _animationTime).SetEase(Ease.Linear);
     }
 }

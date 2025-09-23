@@ -16,7 +16,7 @@ public class BattleManager : MonoBehaviour
     private TextMeshProUGUI _status;
 
     [SerializeField]
-    private float _statusChangeTime;
+    private float _statusChangeTime, _startDelay;
 
     private bool _isPlayerTurn;
 
@@ -40,7 +40,7 @@ public class BattleManager : MonoBehaviour
         {
             if (_requiredLevel < 3) _requiredLevel++;
 
-            _enemy = new EnemySO(_scriptableObjectHolder.GetRandom());
+            GenerateEnemy();
             _enemy.Health += _enemy.Stats.Endurance;
             _player.Health += _player.Stats.Endurance;
 
@@ -51,14 +51,35 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    private void GenerateEnemy()
+    {
+        if (_enemy != null)
+        {
+            EnemySO enemy;
+            do enemy = new EnemySO(_scriptableObjectHolder.GetRandom());
+            while (enemy.name == _enemy.name);
+            _enemy = enemy;
+        }
+        else
+            _enemy = new EnemySO(_scriptableObjectHolder.GetRandom());
+    }
+
     private IEnumerator BattleCoroutine()
     {
-        _status.text = "";
-        yield return new WaitForSeconds(_statusChangeTime);
+        _turnCount = 0;
+        _status.text = "Battle";
+        yield return new WaitForSeconds(_startDelay);
 
         while (true)
         {
             if (_turnCount == 0) IsPlayerFirst();
+            else if (_turnCount == 20)
+            {
+                _status.text = "We'll call it a draw";
+                _player.ResetCharacter();
+                OnGameOver?.Invoke();
+                yield break;
+            }
             _turnCount++;
 
             if (_isPlayerTurn) _status.text = "Player turn";
