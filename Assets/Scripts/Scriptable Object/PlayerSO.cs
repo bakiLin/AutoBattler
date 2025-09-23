@@ -66,11 +66,13 @@ public class PlayerSO : ScriptableObject, ICharacter
     public void SelectClass(ClassSO characterClass)
     {
         _dataCopy.GetDataCopy(ref _data);
+
+        if (ClassDictionary.Count == 0) _weapon = characterClass.Weapon;
+
         _data.IncreaseClassLevel(characterClass);
         _data.GetBonus(characterClass, _holder);
 
         _health = GetHealth();
-        if (ClassDictionary.Count == 1) _weapon = characterClass.Weapon;
 
         if (Stats != null) OnUpdateStats?.Invoke();
         OnUpdateClass?.Invoke(characterClass);
