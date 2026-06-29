@@ -1,21 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using Random = System.Random;
 
 public class PlayerData
 {
     public Stats Stats { get; private set; }
-    public Dictionary<string, ClassData> ClassDict { get; private set; }
+    public Dictionary<string, int> ClassLevels { get; private set; }
     public List<BonusBase> BonusList { get; private set; }
 
     private Random _random = new Random();
 
-    public PlayerData(Stats stats, Dictionary<string, ClassData> classDict, List<BonusBase> bonusList)
+    public PlayerData(Stats stats, Dictionary<string, int> classDict, List<BonusBase> bonusList)
     {
         Stats = new Stats(stats.Strength, stats.Dexterity, stats.Endurance);
-        ClassDict = new Dictionary<string, ClassData>(classDict);
+        ClassLevels = new Dictionary<string, int>(classDict);
         BonusList = new List<BonusBase>(bonusList);
     }
 
@@ -29,28 +28,19 @@ public class PlayerData
 
     public int CalculateLevel()
     {
-        return ClassDict.Values.Sum(value => value.Level);
+        return ClassLevels.Values.Sum();
     }
 
     public void IncreaseClassLevel(ClassData data)
     {
-        if (!ClassDict.ContainsKey(data.Id))
-            ClassDict.Add(data.Id, new ClassData(data));
-        ClassDict[data.Id].LevelUp();
+        if (!ClassLevels.ContainsKey(data.Id))
+            ClassLevels.Add(data.Id, 0);
+        ClassLevels[data.Id]++;
     }
 
     public void GetBonus(ClassData data)
     {
-        Bonus bonus = Array.Find(data.Bonus, x => x.UnlockLevel == ClassDict[data.Id].Level);
-
-        Debug.Log(data.Level);
-        for (int i = 0; i < data.Bonus.Length; i++)
-        {
-            Debug.Log($"{data.Bonus[i].UnlockLevel} - {data.Bonus[i].ClassBonus}");
-        }
-
-        //Debug.Log($"{bonus} - {data.Bonus[0].}");
-
+        Bonus bonus = Array.Find(data.Bonus, x => x.UnlockLevel == ClassLevels[data.Id]);
         if (bonus != null)
             BonusList.Add(bonus.ClassBonus);
     }

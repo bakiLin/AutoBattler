@@ -85,7 +85,7 @@ public class CharacterUI : MonoBehaviour
     private string SetClassLevel(string className)
     {
         if (_player.ClassDictionary.ContainsKey(className))
-            return _player.ClassDictionary[className].Level.ToString();
+            return _player.ClassDictionary[className].ToString();
         return "0";
     }
 

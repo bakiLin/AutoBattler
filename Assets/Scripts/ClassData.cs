@@ -8,7 +8,6 @@ public class ClassData
     [field: SerializeField] public int Health { get; private set; }
     [field: SerializeField] public WeaponSO Weapon { get; private set; }
     [field: SerializeField] public Bonus[] Bonus { get; private set; }
-    public int Level { get; private set; }
 
     public ClassData(ClassData so)
     {
@@ -16,10 +15,7 @@ public class ClassData
         Health = so.Health;
         Weapon = so.Weapon;
         Bonus = so.Bonus;
-        Level = so.Level;
     }
-
-    public void LevelUp() => Level++;
 }
 
 [Serializable]

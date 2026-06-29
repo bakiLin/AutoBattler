@@ -9,7 +9,7 @@ public class PlayerSO : ScriptableObject, ICharacter
 
     public List<BonusBase> BonusList { get => _data.BonusList; }
 
-    public Dictionary<string, ClassData> ClassDictionary { get => _data.ClassDict; }
+    public Dictionary<string, int> ClassDictionary { get => _data.ClassLevels; }
 
     // Health
     private int _health;
@@ -53,8 +53,8 @@ public class PlayerSO : ScriptableObject, ICharacter
         _health = 0;
         _weapon = null;
 
-        _data = new PlayerData(new Stats(0, 0, 0), new Dictionary<string, ClassData>(), new List<BonusBase>());
-        _dataCopy = new PlayerData(new Stats(0, 0, 0), _data.ClassDict, _data.BonusList);
+        _data = new PlayerData(new Stats(0, 0, 0), new Dictionary<string, int>(), new List<BonusBase>());
+        _dataCopy = new PlayerData(new Stats(0, 0, 0), _data.ClassLevels, _data.BonusList);
     }
 
     public void GenerateStats()
@@ -68,7 +68,7 @@ public class PlayerSO : ScriptableObject, ICharacter
         var stats = _dataCopy.Stats.Strength != 0 ? _dataCopy.Stats : _data.Stats;
 
         _data = new PlayerData(stats, 
-            _dataCopy.ClassDict, _dataCopy.BonusList);
+            _dataCopy.ClassLevels, _dataCopy.BonusList);
 
         if (ClassDictionary.Count == 0) _weapon = characterClass.Weapon;
 
@@ -100,7 +100,7 @@ public class PlayerSO : ScriptableObject, ICharacter
     {
         int level = 0;
         foreach (var value in ClassDictionary.Values)
-            level += value.Level;
+            level += value;
         return level;
     }
 
@@ -109,9 +109,20 @@ public class PlayerSO : ScriptableObject, ICharacter
     public int GetHealth()
     {
         int health = 0;
-        foreach (var value in ClassDictionary.Values)
-            if (value.Level > 0) health += value.Health * value.Level;
+
+        foreach (var pair in ClassDictionary)
+        {
+            health += CalculateClassHealth(_holder.Thief.Data, pair);
+            health += CalculateClassHealth(_holder.Warrior.Data, pair);
+            health += CalculateClassHealth(_holder.Barbarian.Data, pair);
+        }
+
         return health;
+    }
+
+    private int CalculateClassHealth(ClassData data, KeyValuePair<string, int> pair)
+    {
+        return pair.Key == data.Id ? data.Health * pair.Value : 0;
     }
 
     public void RestoreHealth()
