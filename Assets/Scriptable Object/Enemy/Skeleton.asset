@@ -15,8 +15,8 @@ MonoBehaviour:
   _health: 10
   _damage: 2
   _stats:
-    Strength: 2
-    Dexterity: 2
-    Endurance: 1
+    <Strength>k__BackingField: 2
+    <Dexterity>k__BackingField: 2
+    <Endurance>k__BackingField: 1
   _reward: {fileID: 11400000, guid: cbffd7726eb69654c91625faa35d85da, type: 2}
   _bonus: {fileID: 11400000, guid: 5410fb88ab3780a43adebff974fbbfec, type: 2}

@@ -9,7 +9,7 @@ public class PlayerSO : ScriptableObject, ICharacter
 
     public List<BonusBase> BonusList { get => _data.BonusList; }
 
-    public Dictionary<string, ClassSO> ClassDictionary { get => _data.ClassDictionary; }
+    public Dictionary<string, ClassData> ClassDictionary { get => _data.ClassDict; }
 
     // Health
     private int _health;
@@ -37,7 +37,7 @@ public class PlayerSO : ScriptableObject, ICharacter
     // Events
     public event Action OnUpdateStats, OnUpdateHealth;
 
-    public event Action<ClassSO> OnUpdateClass;
+    public event Action<ClassData> OnUpdateClass;
 
     [SerializeField] private ScriptableObjectHolder _holder;
 
@@ -53,8 +53,8 @@ public class PlayerSO : ScriptableObject, ICharacter
         _health = 0;
         _weapon = null;
 
-        _data = new PlayerData(null, new Dictionary<string, ClassSO>(), new List<BonusBase>());
-        _dataCopy = new PlayerData(null, _data.ClassDictionary, _data.BonusList);
+        _data = new PlayerData(new Stats(0, 0, 0), new Dictionary<string, ClassData>(), new List<BonusBase>());
+        _dataCopy = new PlayerData(new Stats(0, 0, 0), _data.ClassDict, _data.BonusList);
     }
 
     public void GenerateStats()
@@ -63,14 +63,17 @@ public class PlayerSO : ScriptableObject, ICharacter
         OnUpdateStats?.Invoke();
     }
 
-    public void SelectClass(ClassSO characterClass)
+    public void SelectClass(ClassData characterClass)
     {
-        _dataCopy.GetDataCopy(ref _data);
+        var stats = _dataCopy.Stats.Strength != 0 ? _dataCopy.Stats : _data.Stats;
+
+        _data = new PlayerData(stats, 
+            _dataCopy.ClassDict, _dataCopy.BonusList);
 
         if (ClassDictionary.Count == 0) _weapon = characterClass.Weapon;
 
         _data.IncreaseClassLevel(characterClass);
-        _data.GetBonus(characterClass, _holder);
+        _data.GetBonus(characterClass);
 
         _health = GetHealth();
 

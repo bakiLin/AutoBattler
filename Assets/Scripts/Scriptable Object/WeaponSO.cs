@@ -1,17 +1,10 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "SO/Weapon", fileName = "New Weapon")]
+[CreateAssetMenu(menuName = "SO/Weapon", fileName = "WeaponSO")]
 public class WeaponSO : ScriptableObject
 {
-    [SerializeField]
-    private WeaponType _type;
-
-    [SerializeField]
-    private int _damage;
-
-    public WeaponType Type { get => _type; }
-
-    public int Damage { get => _damage; }
+    [field: SerializeField] public WeaponType Type { get; private set; }
+    [field: SerializeField] public int Damage { get; private set; }
 }
 
 public enum WeaponType

@@ -12,6 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25084e90c55bb5943b293351e5c0237b, type: 3}
   m_Name: Warrior
   m_EditorClassIdentifier: 
-  _id: 1
-  _health: 5
-  _weapon: {fileID: 11400000, guid: fb0d8a98d44a93a4e8d7cc31965c5e4c, type: 2}
+  <Data>k__BackingField:
+    <Id>k__BackingField: Warrior
+    <Health>k__BackingField: 5
+    <Weapon>k__BackingField: {fileID: 11400000, guid: fb0d8a98d44a93a4e8d7cc31965c5e4c, type: 2}
+    <Bonus>k__BackingField:
+    - <UnlockLevel>k__BackingField: 1
+      <ClassBonus>k__BackingField: {fileID: 11400000, guid: 2ac7c9fa1eee1a044b62c69af42ef45a, type: 2}
+    - <UnlockLevel>k__BackingField: 2
+      <ClassBonus>k__BackingField: {fileID: 11400000, guid: 12d20e7fe370a8a41b55c40f79658e90, type: 2}
