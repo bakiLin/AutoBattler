@@ -12,12 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25084e90c55bb5943b293351e5c0237b, type: 3}
   m_Name: Barbarian
   m_EditorClassIdentifier: 
-  <Data>k__BackingField:
-    <Id>k__BackingField: Barbarian
-    <Health>k__BackingField: 6
-    <Weapon>k__BackingField: {fileID: 11400000, guid: cbffd7726eb69654c91625faa35d85da, type: 2}
-    <Bonus>k__BackingField:
-    - <UnlockLevel>k__BackingField: 1
-      <ClassBonus>k__BackingField: {fileID: 11400000, guid: 95755a57d910e4540ab7f5c25fc87238, type: 2}
-    - <UnlockLevel>k__BackingField: 2
-      <ClassBonus>k__BackingField: {fileID: 11400000, guid: df7c25820015d8347ad79fa273efb986, type: 2}
+  <Id>k__BackingField: Barbarian
+  <Health>k__BackingField: 6
+  <Weapon>k__BackingField: {fileID: 11400000, guid: cbffd7726eb69654c91625faa35d85da, type: 2}
+  <Bonus>k__BackingField:
+  - <UnlockLevel>k__BackingField: 1
+    <ClassBonus>k__BackingField: {fileID: 11400000, guid: 95755a57d910e4540ab7f5c25fc87238, type: 2}
+  - <UnlockLevel>k__BackingField: 2
+    <ClassBonus>k__BackingField: {fileID: 11400000, guid: df7c25820015d8347ad79fa273efb986, type: 2}
+  <StatBonus>k__BackingField:
+  - <UnlockLevel>k__BackingField: 3
+    <Stats>k__BackingField:
+      <Strength>k__BackingField: 0
+      <Dexterity>k__BackingField: 0
+      <Endurance>k__BackingField: 1

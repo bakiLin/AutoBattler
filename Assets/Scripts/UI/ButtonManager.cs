@@ -25,6 +25,6 @@ public class ButtonManager : MonoBehaviour
 
     public void SelectClass(ClassSO characterClass)
     {
-        _player.SelectClass(characterClass.Data);
+        _player.SelectClass(characterClass);
     }
 }

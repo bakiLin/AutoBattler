@@ -45,7 +45,7 @@ public class CharacterUI : MonoBehaviour
         _player.OnUpdateStats -= UpdateStatsUI;
     }
 
-    private void UpdateClassUI(ClassData characterClass)
+    private void UpdateClassUI(string id)
     {
         _health.text = _player.GetHealth().ToString();
 
@@ -59,7 +59,7 @@ public class CharacterUI : MonoBehaviour
         _barbarian.text = SetClassLevel(_scriptableObjectHolder.Barbarian.name);
 
         ResetButtons();
-        if (characterClass != null) SetButtons(characterClass.Id);
+        if (id != null) SetButtons(id);
         UpdateBonus();
         SetBonus();
     }

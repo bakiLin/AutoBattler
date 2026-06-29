@@ -37,7 +37,7 @@ public class PlayerSO : ScriptableObject, ICharacter
     // Events
     public event Action OnUpdateStats, OnUpdateHealth;
 
-    public event Action<ClassData> OnUpdateClass;
+    public event Action<string> OnUpdateClass;
 
     [SerializeField] private ScriptableObjectHolder _holder;
 
@@ -63,7 +63,7 @@ public class PlayerSO : ScriptableObject, ICharacter
         OnUpdateStats?.Invoke();
     }
 
-    public void SelectClass(ClassData characterClass)
+    public void SelectClass(ClassSO characterClass)
     {
         var stats = _dataCopy.Stats.Strength != 0 ? _dataCopy.Stats : _data.Stats;
 
@@ -72,13 +72,13 @@ public class PlayerSO : ScriptableObject, ICharacter
 
         if (ClassDictionary.Count == 0) _weapon = characterClass.Weapon;
 
-        _data.IncreaseClassLevel(characterClass);
+        _data.IncreaseClassLevel(characterClass.Id);
         _data.GetBonus(characterClass);
 
         _health = GetHealth();
 
         if (Stats != null) OnUpdateStats?.Invoke();
-        OnUpdateClass?.Invoke(characterClass);
+        OnUpdateClass?.Invoke(characterClass.Id);
     }
 
     public int ActivateBonus(BattleData battleData, BonusType requiredBonusType)
@@ -112,15 +112,15 @@ public class PlayerSO : ScriptableObject, ICharacter
 
         foreach (var pair in ClassDictionary)
         {
-            health += CalculateClassHealth(_holder.Thief.Data, pair);
-            health += CalculateClassHealth(_holder.Warrior.Data, pair);
-            health += CalculateClassHealth(_holder.Barbarian.Data, pair);
+            health += CalculateClassHealth(_holder.Thief, pair);
+            health += CalculateClassHealth(_holder.Warrior, pair);
+            health += CalculateClassHealth(_holder.Barbarian, pair);
         }
 
         return health;
     }
 
-    private int CalculateClassHealth(ClassData data, KeyValuePair<string, int> pair)
+    private int CalculateClassHealth(ClassSO data, KeyValuePair<string, int> pair)
     {
         return pair.Key == data.Id ? data.Health * pair.Value : 0;
     }

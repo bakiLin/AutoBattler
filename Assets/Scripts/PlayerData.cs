@@ -31,17 +31,25 @@ public class PlayerData
         return ClassLevels.Values.Sum();
     }
 
-    public void IncreaseClassLevel(ClassData data)
+    public void IncreaseClassLevel(string id)
     {
-        if (!ClassLevels.ContainsKey(data.Id))
-            ClassLevels.Add(data.Id, 0);
-        ClassLevels[data.Id]++;
+        if (!ClassLevels.ContainsKey(id))
+            ClassLevels.Add(id, 0);
+        ClassLevels[id]++;
     }
 
-    public void GetBonus(ClassData data)
+    public void GetBonus(ClassSO data)
     {
-        Bonus bonus = Array.Find(data.Bonus, x => x.UnlockLevel == ClassLevels[data.Id]);
-        if (bonus != null)
-            BonusList.Add(bonus.ClassBonus);
+        var bonus = Array.Find(data.Bonus, x => x.UnlockLevel == ClassLevels[data.Id]);
+        if (bonus != null) BonusList.Add(bonus.ClassBonus);
+
+        var statBonus = Array.Find(data.StatBonus, x => x.UnlockLevel == ClassLevels[data.Id]);
+        if (statBonus != null)
+        {
+            var temp = statBonus.Stats;
+            Stats stats = new Stats(Stats.Strength, Stats.Dexterity, Stats.Endurance);
+            Stats = new Stats(stats.Strength + temp.Strength, stats.Dexterity + temp.Dexterity,
+                stats.Endurance + temp.Endurance);
+        }
     }
 }
