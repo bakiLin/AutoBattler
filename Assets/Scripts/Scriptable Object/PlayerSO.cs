@@ -8,9 +8,9 @@ public class PlayerSO : ScriptableObject, ICharacter
 {
     public Stats Stats { get => _data.Stats; }
 
-    public List<BonusBase> BonusList { get => _data.BonusList; }
+    public List<BonusBase> BonusList { get => _data.Bonus; }
 
-    public Dictionary<string, int> ClassDictionary { get => _data.ClassLevels; }
+    public Dictionary<string, int> ClassDictionary { get => _data.Class; }
 
     // Health
     private int _health;
@@ -55,7 +55,7 @@ public class PlayerSO : ScriptableObject, ICharacter
         _weapon = null;
 
         _data = new PlayerData(new Stats(0, 0, 0), new Dictionary<string, int>(), new List<BonusBase>());
-        _dataCopy = new PlayerData(new Stats(0, 0, 0), _data.ClassLevels, _data.BonusList);
+        _dataCopy = new PlayerData(new Stats(0, 0, 0), _data.Class, _data.Bonus);
     }
 
     public void GenerateStats()
@@ -69,11 +69,11 @@ public class PlayerSO : ScriptableObject, ICharacter
         var stats = _dataCopy.Stats.Strength != 0 ? _dataCopy.Stats : _data.Stats;
 
         _data = new PlayerData(stats, 
-            _dataCopy.ClassLevels, _dataCopy.BonusList);
+            _dataCopy.Class, _dataCopy.Bonus);
 
         if (ClassDictionary.Count == 0) _weapon = characterClass.Weapon;
 
-        _data.IncreaseClassLevel(characterClass.Id);
+        _data.LevelUp(characterClass.Id);
         _data.GetBonus(characterClass);
 
         _health = GetHealth();
@@ -82,11 +82,11 @@ public class PlayerSO : ScriptableObject, ICharacter
         OnUpdateClass?.Invoke(characterClass.Id);
     }
 
-    public int ActivateBonus(BattleData battleData, BonusType requiredBonusType)
+    public int UseBonus(TurnData battleData, BonusType requiredBonusType)
     {
         int damage = 0;
         foreach (var bonus in BonusList)
-            damage += bonus.BonusType == requiredBonusType ? bonus.Bonus(battleData) : 0;
+            damage += bonus.Type == requiredBonusType ? bonus.Use(battleData) : 0;
         return damage;
     }
 
@@ -105,7 +105,7 @@ public class PlayerSO : ScriptableObject, ICharacter
         return level;
     }
 
-    public int GetActiveLevel() => _dataCopy.ClassLevels.Values.Sum();
+    public int GetActiveLevel() => _dataCopy.Class.Values.Sum();
 
     public int GetHealth()
     {

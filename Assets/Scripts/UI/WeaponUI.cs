@@ -22,7 +22,7 @@ public class WeaponUI : MonoBehaviour
     private void UpdateWeaponUI(WeaponSO weapon)
     {
         _name.text = weapon.name;
-        _type.text = weapon.Type.ToString();
-        _damage.text = weapon.Damage.ToString();
+        _type.text = weapon.Weapon.Type.ToString();
+        _damage.text = weapon.Weapon.Damage.ToString();
     }
 }

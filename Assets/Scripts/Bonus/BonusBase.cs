@@ -1,18 +1,10 @@
 using UnityEngine;
 
-public abstract class BonusBase : ScriptableObject, IBonus
+public abstract class BonusBase : ScriptableObject
 {
-    [SerializeField]
-    private int _id;
+    [field: SerializeField] public BonusType Type { get; private set; }
 
-    public int Id { get => _id; }
-
-    [SerializeField]
-    private BonusType _bonusType;
-
-    public BonusType BonusType { get => _bonusType; }
-
-    public virtual int Bonus(BattleData battleData) => 0;
+    public abstract int Use(TurnData battleData);
 }
 
 public enum BonusType 

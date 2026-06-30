@@ -41,7 +41,7 @@ public class BattleUI : MonoBehaviour
     private void UpdatePlayerStats()
     {
         _playerHealth.text = _player.Health.ToString();
-        _playerDamage.text = (_player.Weapon.Damage + _player.Stats.Strength).ToString();
+        _playerDamage.text = (_player.Weapon.Weapon.Damage + _player.Stats.Strength).ToString();
         _playerStrength.text = _player.Stats.Strength.ToString();
         _playerDexterity.text = _player.Stats.Dexterity.ToString();
         _playerEndurance.text = _player.Stats.Endurance.ToString();

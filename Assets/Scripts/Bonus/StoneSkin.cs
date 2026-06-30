@@ -1,9 +1,9 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "SO/Bonus/Stone Skin", fileName = "Stone Skin")]
-public class StoneSkin : BonusBase, IBonus
+public class StoneSkin : BonusBase
 {
-    public override int Bonus(BattleData battleData)
+    public override int Use(TurnData battleData)
     {
         return -battleData.TargetStats.Endurance;
     }

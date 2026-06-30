@@ -147,7 +147,7 @@ public class BattleManager : MonoBehaviour
             if (IsAttackSuccessful(_player.Stats.Dexterity, _enemy.Stats.Dexterity))
             {
                 _playerTurnCount++;
-                _enemy.Health -= CalculateDamage(_player, _enemy, _player.Weapon.Damage, _playerTurnCount, _player.Weapon.Type);
+                _enemy.Health -= CalculateDamage(_player, _enemy, _player.Weapon.Weapon.Damage, _playerTurnCount, _player.Weapon.Weapon.Type);
                 OnUpdateEnemyUI.Invoke(_enemy);
                 if (IsDead(_enemy.Health, "Player won")) return false;
             }
@@ -166,10 +166,10 @@ public class BattleManager : MonoBehaviour
 
     private int CalculateDamage(ICharacter attack, ICharacter target, int weaponDamage, int turnCount, WeaponType weaponType)
     {
-        var battleData = new BattleData(attack.Stats, target.Stats, weaponDamage, turnCount, weaponType);
+        var battleData = new TurnData(attack.Stats, target.Stats, weaponDamage, turnCount, weaponType);
         int damage = weaponDamage + attack.Stats.Strength;
-        damage += attack.ActivateBonus(battleData, BonusType.Attack);
-        damage += target.ActivateBonus(battleData, BonusType.Defence);
+        damage += attack.UseBonus(battleData, BonusType.Attack);
+        damage += target.UseBonus(battleData, BonusType.Defence);
         return damage;
     }
 

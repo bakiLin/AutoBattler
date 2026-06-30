@@ -44,10 +44,10 @@ public class EnemySO : ScriptableObject, ICharacter
         _bonus = enemy.Bonus;
     }
 
-    public int ActivateBonus(BattleData battleData, BonusType requiredBonusType)
+    public int UseBonus(TurnData battleData, BonusType requiredBonusType)
     {
-        if (Bonus?.BonusType == requiredBonusType)
-            return Bonus.Bonus(battleData);
+        if (Bonus?.Type == requiredBonusType)
+            return Bonus.Use(battleData);
         return 0;
     }
 }

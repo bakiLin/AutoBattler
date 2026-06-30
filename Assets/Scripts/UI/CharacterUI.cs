@@ -51,8 +51,8 @@ public class CharacterUI : MonoBehaviour
 
         var weapon = _player.Weapon;
         _weaponName.text = weapon.name;
-        _weaponType.text = weapon.Type.ToString();
-        _weaponDamage.text = weapon.Damage.ToString();
+        _weaponType.text = weapon.Weapon.Type.ToString();
+        _weaponDamage.text = weapon.Weapon.Damage.ToString();
 
         _thief.text = SetClassLevel(_scriptableObjectHolder.Thief.name);
         _warrior.text = SetClassLevel(_scriptableObjectHolder.Warrior.name);
@@ -78,7 +78,7 @@ public class CharacterUI : MonoBehaviour
         if (_player.ClassDictionary.Count > 0)
         {
             _health.text = $"{_player.GetHealth()} (+ {_player.Stats.Endurance})";
-            _weaponDamage.text = $"{(_player.Weapon == null ? 0 : _player.Weapon.Damage)} (+ {_player.Stats.Strength})";
+            _weaponDamage.text = $"{(_player.Weapon == null ? 0 : _player.Weapon.Weapon.Damage)} (+ {_player.Stats.Strength})";
         }
     }
 
