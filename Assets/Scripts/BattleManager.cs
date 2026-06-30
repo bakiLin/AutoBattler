@@ -10,7 +10,7 @@ public class BattleManager : MonoBehaviour
     private PlayerSO _player;
 
     [SerializeField]
-    private ScriptableObjectHolder _scriptableObjectHolder;
+    private GameDatabaseSO _scriptableObjectHolder;
 
     [SerializeField]
     private TextMeshProUGUI _status;

@@ -19,4 +19,9 @@ public struct Stats
     {
         return new Stats(a.Strength + b.Strength, a.Dexterity + b.Dexterity, a.Endurance + b.Endurance);
     }
+
+    public bool IsZero()
+    {
+        return Strength == 0 && Dexterity == 0 && Endurance == 0;
+    }
 }

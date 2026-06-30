@@ -2,5 +2,5 @@ public interface ICharacter
 {
     Stats Stats { get; }
 
-    int UseBonus(TurnData battleData, BonusType requiredBonusType);
+    int UseBonus(TurnData data, BonusType type);
 }

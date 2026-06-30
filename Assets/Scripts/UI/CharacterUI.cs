@@ -4,7 +4,7 @@ using UnityEngine;
 public class CharacterUI : MonoBehaviour
 {
     [SerializeField]
-    private ScriptableObjectHolder _scriptableObjectHolder;
+    private GameDatabaseSO _scriptableObjectHolder;
 
     [SerializeField]
     private PlayerSO _player;
