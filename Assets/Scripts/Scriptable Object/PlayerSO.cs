@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "SO/Player", fileName = "New Player")]
@@ -77,7 +78,7 @@ public class PlayerSO : ScriptableObject, ICharacter
 
         _health = GetHealth();
 
-        if (Stats != null) OnUpdateStats?.Invoke();
+        OnUpdateStats?.Invoke();
         OnUpdateClass?.Invoke(characterClass.Id);
     }
 
@@ -91,7 +92,7 @@ public class PlayerSO : ScriptableObject, ICharacter
 
     public bool IsReadyToBattle(int requiredLevel)
     {
-        if (Stats != null && requiredLevel == CalculateLevel())
+        if (requiredLevel == CalculateLevel())
             return true;
         return false;
     }
@@ -104,7 +105,7 @@ public class PlayerSO : ScriptableObject, ICharacter
         return level;
     }
 
-    public int GetActiveLevel() => _dataCopy.CalculateLevel();
+    public int GetActiveLevel() => _dataCopy.ClassLevels.Values.Sum();
 
     public int GetHealth()
     {

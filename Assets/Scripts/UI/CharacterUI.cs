@@ -75,7 +75,7 @@ public class CharacterUI : MonoBehaviour
 
     private void UpdateBonus()
     {
-        if (_player.Stats != null && _player.ClassDictionary.Count > 0)
+        if (_player.ClassDictionary.Count > 0)
         {
             _health.text = $"{_player.GetHealth()} (+ {_player.Stats.Endurance})";
             _weaponDamage.text = $"{(_player.Weapon == null ? 0 : _player.Weapon.Damage)} (+ {_player.Stats.Strength})";
