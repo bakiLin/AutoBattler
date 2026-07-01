@@ -13,8 +13,8 @@ public class GameDatabaseSO : ScriptableObject
         return Array.Find(Classes, x => x.Id == id);
     }
 
-    public EnemySO GetRandomEnemy()
+    public Enemy GetRandomEnemy()
     {
-        return Enemies[Random.Range(0, Enemies.Length)];
+        return Enemies[Random.Range(0, Enemies.Length)].Enemy;
     }
 }

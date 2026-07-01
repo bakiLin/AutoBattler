@@ -12,6 +12,7 @@ public class RootLifetimeScope : LifetimeScope
         RegisterMessagePipe(builder);
 
         builder.Register<PlayerManager>(Lifetime.Singleton);
+        builder.Register<BattleManager>(Lifetime.Singleton);
 
         builder.RegisterInstance(_database);
     }

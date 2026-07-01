@@ -10,6 +10,7 @@ public class EnemySO : ScriptableObject
 [Serializable]
 public struct Enemy : ICharacter
 {
+    [field: SerializeField] public string Id { get; private set; }
     [field: SerializeField] public int Health { get; private set; }
     [field: SerializeField] public int Damage { get; private set; }
     [field: SerializeField] public WeaponSO Reward { get; private set; }
@@ -19,5 +20,15 @@ public struct Enemy : ICharacter
     public int CalculateBonusDamage(TurnData data, BonusType type)
     {
         return Bonus?.Type == type ? Bonus.Use(data) : 0;
+    }
+
+    public void SetMaxHealth()
+    {
+        Health += Stats.Endurance;
+    }
+
+    public void SetHealth(int value)
+    {
+        Health = Mathf.Max(0, value);
     }
 }

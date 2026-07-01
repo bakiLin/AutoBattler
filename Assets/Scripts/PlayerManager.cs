@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 public class PlayerManager : ICharacter
 {
+    public Stats Stats => _data.Stats;
+    public Weapon Weapon => _data.Weapon;
+
     private PlayerData _data;
     private PlayerData _snapshot;
     private GameDatabaseSO _database;
@@ -17,6 +20,11 @@ public class PlayerManager : ICharacter
         _data = new PlayerData(0, new Weapon(), new Stats(0, 0, 0), 
             new Dictionary<string, int>(), new List<BonusBase>());
         _snapshot = _data.Clone();
+    }
+
+    public PlayerData GetPlayer()
+    {
+        return _data.Clone();
     }
 
     public void GenerateStats()
@@ -58,6 +66,11 @@ public class PlayerManager : ICharacter
     public int CalculateBonusDamage(TurnData data, BonusType type)
     {
         return _data.CalculateBonusDamage(data, type);
+    }
+
+    public void TakeDamage(int damage)
+    {
+        _data.SetHealth(_data.Health - damage);
     }
 
     private int CalculateMaxHealth()
