@@ -6,7 +6,7 @@ public class ActionRush : BonusBase
     public override int Use(TurnData battleData)
     {
         if (battleData.Turn == 1)
-            return battleData.WeaponDamage;
+            return battleData.Weapon.Damage;
         return 0;
     }
 }

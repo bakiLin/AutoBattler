@@ -5,6 +5,6 @@ public class StoneSkin : BonusBase
 {
     public override int Use(TurnData battleData)
     {
-        return -battleData.TargetStats.Endurance;
+        return -battleData.Target.Endurance;
     }
 }

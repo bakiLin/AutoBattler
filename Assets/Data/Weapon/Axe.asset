@@ -9,7 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e898cd04c107cd940b18445a48268c03, type: 3}
-  m_Name: Player
+  m_Script: {fileID: 11500000, guid: 4cf05cda5e51a0641a8a68902f8ddcac, type: 3}
+  m_Name: Axe
   m_EditorClassIdentifier: 
-  _holder: {fileID: 11400000, guid: be0bf3aaeaf9d6c4d8c2558d9d5645d1, type: 2}
+  <Weapon>k__BackingField:
+    <Id>k__BackingField: Axe
+    <Type>k__BackingField: 1
+    <Damage>k__BackingField: 4

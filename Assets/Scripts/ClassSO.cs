@@ -12,14 +12,14 @@ public class ClassSO : ScriptableObject
 }
 
 [Serializable]
-public class Bonus
+public struct Bonus
 {
     [field: SerializeField] public int UnlockLevel { get; private set; }
     [field: SerializeField] public BonusBase ClassBonus { get; private set; }
 }
 
 [Serializable]
-public class StatBonus
+public struct StatBonus
 {
     [field: SerializeField] public int UnlockLevel { get; private set; }
     [field: SerializeField] public Stats Stats { get; private set; }

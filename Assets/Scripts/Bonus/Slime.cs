@@ -5,8 +5,8 @@ public class Slime : BonusBase
 {
     public override int Use(TurnData battleData)
     {
-        if (battleData.WeaponType == WeaponType.Slashing)
-            return -battleData.WeaponDamage;
+        if (battleData.Weapon.Type == WeaponType.Slashing)
+            return -battleData.Weapon.Damage;
         return 0;
     }
 }

@@ -1,9 +1,9 @@
 public class UpdatePlayerInMenuMessage : EventMessage
 {
-    public Stats Stats { get; private set; }
+    public PlayerData PlayerData { get; private set; }
 
-    public UpdatePlayerInMenuMessage(Stats stats)
+    public UpdatePlayerInMenuMessage(PlayerData playerData)
     {
-        Stats = stats;
+        PlayerData = playerData;
     }
 }

@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Dagger
   m_EditorClassIdentifier: 
   <Weapon>k__BackingField:
+    <Id>k__BackingField: Dagger
     <Type>k__BackingField: 3
     <Damage>k__BackingField: 2

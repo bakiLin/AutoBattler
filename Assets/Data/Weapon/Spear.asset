@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4cf05cda5e51a0641a8a68902f8ddcac, type: 3}
-  m_Name: Legendary Sword
+  m_Name: Spear
   m_EditorClassIdentifier: 
   <Weapon>k__BackingField:
-    <Type>k__BackingField: 1
-    <Damage>k__BackingField: 10
+    <Id>k__BackingField: Spear
+    <Type>k__BackingField: 3
+    <Damage>k__BackingField: 3

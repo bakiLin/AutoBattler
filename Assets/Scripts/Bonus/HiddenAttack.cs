@@ -5,7 +5,7 @@ public class HiddenAttack : BonusBase
 {
     public override int Use(TurnData battleData)
     {
-        if (battleData.AttackStats.Dexterity > battleData.TargetStats.Dexterity)
+        if (battleData.Attacker.Dexterity > battleData.Target.Dexterity)
             return 1;
         return 0;
     }

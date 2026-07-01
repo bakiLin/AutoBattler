@@ -5,7 +5,7 @@ public class Shield : BonusBase
 {
     public override int Use(TurnData battleData)
     {
-        if (battleData.TargetStats.Strength > battleData.AttackStats.Strength)
+        if (battleData.Target.Strength > battleData.Attacker.Strength)
             return -3;
         return 0;
     }

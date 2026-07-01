@@ -10,8 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4cf05cda5e51a0641a8a68902f8ddcac, type: 3}
-  m_Name: Axe
+  m_Name: Legendary Sword
   m_EditorClassIdentifier: 
   <Weapon>k__BackingField:
+    <Id>k__BackingField: Legendary Sword
     <Type>k__BackingField: 1
-    <Damage>k__BackingField: 4
+    <Damage>k__BackingField: 10

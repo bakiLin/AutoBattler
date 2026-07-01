@@ -5,8 +5,8 @@ public class Skeleton : BonusBase
 {
     public override int Use(TurnData battleData)
     {
-        if (battleData.WeaponType == WeaponType.Bludgeoning)
-            return battleData.AttackStats.Strength + battleData.WeaponDamage;
+        if (battleData.Weapon.Type == WeaponType.Bludgeoning)
+            return battleData.Attacker.Strength + battleData.Weapon.Damage;
         return 0;
     }
 }

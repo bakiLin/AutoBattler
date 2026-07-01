@@ -4,8 +4,8 @@ using UnityEngine.UI;
 
 public class ButtonManager : MonoBehaviour
 {
-    [SerializeField]
-    private PlayerSO _player;
+    //[SerializeField]
+    //private PlayerSO _player;
 
     [SerializeField]
     private Button[] _button;
@@ -18,13 +18,13 @@ public class ButtonManager : MonoBehaviour
         }
     }
 
-    public void GenerateStats()
-    {
-        _player.GenerateStats();
-    }
+    //public void GenerateStats()
+    //{
+    //    _player.GenerateStats();
+    //}
 
-    public void SelectClass(ClassSO characterClass)
-    {
-        _player.SelectClass(characterClass);
-    }
+    //public void SelectClass(ClassSO characterClass)
+    //{
+    //    _player.SelectClass(characterClass);
+    //}
 }

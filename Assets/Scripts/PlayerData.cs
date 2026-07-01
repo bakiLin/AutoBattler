@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = System.Random;
 
-public class PlayerData
+public struct PlayerData : ICharacter
 {
     public int Health { get; private set; }
     public Weapon Weapon { get; private set; }
     public Stats Stats { get; private set; }
     public Dictionary<string, int> Classes { get; private set; }
     public List<BonusBase> Bonuses { get; private set; }
-
-    private Random _random = new Random();
 
     public PlayerData(int health, Weapon weapon, 
         Stats stats, Dictionary<string, int> classDict, List<BonusBase> bonusList)
@@ -25,7 +24,8 @@ public class PlayerData
 
     public PlayerData Clone()
     {
-        return new PlayerData(Health, Weapon, Stats, Classes, Bonuses);
+        return new PlayerData(Health, Weapon, Stats, 
+            new Dictionary<string, int>(Classes), new List<BonusBase>(Bonuses));
     }
 
     public void Restore(PlayerData snapshot)
@@ -53,13 +53,14 @@ public class PlayerData
 
     public void EquipWeapon(Weapon weapon)
     {
-        if (weapon != null) Weapon = weapon;
+        Weapon = weapon;
     }
 
     public void GenerateStats()
     {
         Stats newStats;
-        do newStats = new(_random.Next(1, 4), _random.Next(1, 4), _random.Next(1, 4));
+        Random rand = new();
+        do newStats = new(rand.Next(1, 4), rand.Next(1, 4), rand.Next(1, 4));
         while (Stats.Equals(newStats));
         Stats = newStats;
     }
@@ -75,9 +76,14 @@ public class PlayerData
         if (!Classes.TryGetValue(data.Id, out int currentLevel)) return;
 
         var bonus = Array.Find(data.Bonus, x => x.UnlockLevel == currentLevel);
-        if (bonus != null) Bonuses.Add(bonus.ClassBonus);
+        if (bonus.ClassBonus != null) Bonuses.Add(bonus.ClassBonus);
 
         var statBonus = Array.Find(data.StatBonus, x => x.UnlockLevel == currentLevel);
-        if (statBonus != null) Stats += statBonus.Stats;
+        if (!statBonus.Stats.IsZero()) Stats += statBonus.Stats;
+    }
+
+    public int CalculateBonusDamage(TurnData data, BonusType type)
+    {
+        return Bonuses.Where(x => x.Type == type).Sum(x => x.Use(data));
     }
 }

@@ -8,8 +8,8 @@ public class WindowManager : MonoBehaviour
     [SerializeField]
     private BattleManager _battleManager;
 
-    [SerializeField]
-    private PlayerSO _player;
+    //[SerializeField]
+    //private PlayerSO _player;
 
     [SerializeField]
     private float _animationTime;
@@ -26,19 +26,19 @@ public class WindowManager : MonoBehaviour
     [SerializeField] private RectTransform _battleButton;
     [SerializeField] private RectTransform _replayButton;
 
-    private void OnEnable()
-    {
-        _battleManager.OnStartBattle += BattleWindow;
-        _battleManager.OnEndBattle += WeaponWindow;
-        _battleManager.OnGameOver += GameOver;
-    }
+    //private void OnEnable()
+    //{
+    //    _battleManager.OnStartBattle += BattleWindow;
+    //    _battleManager.OnEndBattle += WeaponWindow;
+    //    _battleManager.OnGameOver += GameOver;
+    //}
 
-    private void OnDisable()
-    {
-        _battleManager.OnStartBattle -= BattleWindow;
-        _battleManager.OnEndBattle -= WeaponWindow;
-        _battleManager.OnGameOver -= GameOver;
-    }
+    //private void OnDisable()
+    //{
+    //    _battleManager.OnStartBattle -= BattleWindow;
+    //    _battleManager.OnEndBattle -= WeaponWindow;
+    //    _battleManager.OnGameOver -= GameOver;
+    //}
 
     private void Start()
     {
@@ -65,24 +65,24 @@ public class WindowManager : MonoBehaviour
             });
     }
 
-    private void WeaponWindow(WeaponSO weapon)
-    {
-        _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
-        _battleWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
-            .OnComplete(() =>
-            {
-                var button = _takeWeaponButton.GetComponent<Button>();
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => {
-                    AudioManager.Instance.Play("button");
-                    _player.Weapon = weapon;
-                    CharacterWindow();
-                });
+    //private void WeaponWindow(WeaponSO weapon)
+    //{
+    //    _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
+    //    _battleWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
+    //        .OnComplete(() =>
+    //        {
+    //            var button = _takeWeaponButton.GetComponent<Button>();
+    //            button.onClick.RemoveAllListeners();
+    //            button.onClick.AddListener(() => {
+    //                AudioManager.Instance.Play("button");
+    //                _player.Weapon = weapon;
+    //                CharacterWindow();
+    //            });
 
-                MoveUIDown(ref _status, -90f);
-                MoveUIDown(ref _weaponWindow, 0f);
-            });
-    }
+    //            MoveUIDown(ref _status, -90f);
+    //            MoveUIDown(ref _weaponWindow, 0f);
+    //        });
+    //}
 
     public void CharacterWindow()
     {

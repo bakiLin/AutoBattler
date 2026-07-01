@@ -8,8 +8,9 @@ public class WeaponSO : ScriptableObject
 }
 
 [Serializable]
-public class Weapon
+public struct Weapon
 {
+    [field: SerializeField] public string Id { get; private set; }
     [field: SerializeField] public WeaponType Type { get; private set; }
     [field: SerializeField] public int Damage { get; private set; }
 }

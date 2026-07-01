@@ -9,15 +9,15 @@ public class WeaponUI : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI _name, _type, _damage;
 
-    private void OnEnable()
-    {
-        _battleManager.OnEndBattle += UpdateWeaponUI;
-    }
+    //private void OnEnable()
+    //{
+    //    _battleManager.OnEndBattle += UpdateWeaponUI;
+    //}
 
-    private void OnDisable()
-    {
-        _battleManager.OnEndBattle -= UpdateWeaponUI;
-    }
+    //private void OnDisable()
+    //{
+    //    _battleManager.OnEndBattle -= UpdateWeaponUI;
+    //}
 
     private void UpdateWeaponUI(WeaponSO weapon)
     {

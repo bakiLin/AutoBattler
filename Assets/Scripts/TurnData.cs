@@ -1,17 +1,15 @@
-public class TurnData
+public struct TurnData
 {
-    public Stats AttackStats, TargetStats;
+    public Stats Attacker { get; private set; }
+    public Stats Target { get; private set; }
+    public Weapon Weapon { get; private set; }
+    public int Turn { get; private set; }
 
-    public int WeaponDamage, Turn;
-
-    public WeaponType WeaponType;
-
-    public TurnData(Stats attackStats, Stats targetStats, int weaponDamage, int turn, WeaponType weaponType)
+    public TurnData(Stats attacker, Stats target, Weapon weapon, int turn)
     {
-        AttackStats = attackStats;
-        TargetStats = targetStats;
-        WeaponDamage = weaponDamage;
+        Attacker = attacker;
+        Target = target;
+        Weapon = weapon;
         Turn = turn;
-        WeaponType = weaponType;
     }
 }

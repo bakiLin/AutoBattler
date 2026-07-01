@@ -1,23 +1,20 @@
 using MessagePipe;
 using System.Linq;
-using UnityEngine;
-using VContainer;
 using System.Collections.Generic;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : ICharacter
 {
     private PlayerData _data;
     private PlayerData _snapshot;
     private GameDatabaseSO _database;
     private IPublisher<UpdatePlayerInMenuMessage> _updatePlayerInMenu;
 
-    [Inject]
-    private void Construct(GameDatabaseSO database, IPublisher<UpdatePlayerInMenuMessage> updatePlayerInMenu)
+    private PlayerManager(GameDatabaseSO database, IPublisher<UpdatePlayerInMenuMessage> updatePlayerInMenu)
     {
         _database = database;
         _updatePlayerInMenu = updatePlayerInMenu;
 
-        _data = new PlayerData(0, null, new Stats(0, 0, 0), 
+        _data = new PlayerData(0, new Weapon(), new Stats(0, 0, 0), 
             new Dictionary<string, int>(), new List<BonusBase>());
         _snapshot = _data.Clone();
     }
@@ -25,6 +22,7 @@ public class PlayerManager : MonoBehaviour
     public void GenerateStats()
     {
         _data.GenerateStats();
+        _data.SetHealth(CalculateMaxHealth());
         NotifyUI();
     }
 
@@ -57,21 +55,24 @@ public class PlayerManager : MonoBehaviour
         _snapshot = _data.Clone();
     }
 
+    public int CalculateBonusDamage(TurnData data, BonusType type)
+    {
+        return _data.CalculateBonusDamage(data, type);
+    }
+
     private int CalculateMaxHealth()
     {
-        int totalHealth = 0;
-
+        int totalHealth = _data.Stats.Endurance;
         foreach (var pair in _data.Classes)
         {
             var conf = _database.GetClassById(pair.Key);
             if (conf != null) totalHealth += conf.Health * pair.Value;
         }
-
         return totalHealth;
     }
 
     private void NotifyUI()
     {
-        _updatePlayerInMenu.Publish(new UpdatePlayerInMenuMessage(_data.Stats));
+        _updatePlayerInMenu.Publish(new UpdatePlayerInMenuMessage(_data));
     }
 }

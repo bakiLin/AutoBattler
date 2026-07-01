@@ -1,6 +1,4 @@
 public interface ICharacter
 {
-    Stats Stats { get; }
-
-    int UseBonus(TurnData data, BonusType type);
+    int CalculateBonusDamage(TurnData data, BonusType type);
 }
