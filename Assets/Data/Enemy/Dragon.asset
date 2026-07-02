@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Dragon
   m_EditorClassIdentifier: 
   <Enemy>k__BackingField:
+    <Id>k__BackingField: Dragon
     <Health>k__BackingField: 20
     <Damage>k__BackingField: 4
     <Reward>k__BackingField: {fileID: 11400000, guid: 77c34ba46b03cd54b8bfa1de5306118b, type: 2}

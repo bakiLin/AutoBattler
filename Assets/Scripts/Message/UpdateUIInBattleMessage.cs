@@ -1,11 +1,11 @@
 public class UpdateUIInBattleMessage : EventMessage
 {
-    public int PlayerHealth { get; private set; }
-    public int EnemyHealth { get; private set; }
+    public int PlayerCurrentHealth { get; }
+    public int EnemyCurrentHealth { get; }
 
-    public UpdateUIInBattleMessage(int playerHealth, int enemyHealth)
+    public UpdateUIInBattleMessage(int playerCurrentHealth, int enemyCurrentHealth)
     {
-        PlayerHealth = playerHealth;
-        EnemyHealth = enemyHealth;
+        PlayerCurrentHealth = playerCurrentHealth;
+        EnemyCurrentHealth = enemyCurrentHealth;
     }
 }

@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Goblin
   m_EditorClassIdentifier: 
   <Enemy>k__BackingField:
+    <Id>k__BackingField: Goblin
     <Health>k__BackingField: 5
     <Damage>k__BackingField: 2
     <Reward>k__BackingField: {fileID: 11400000, guid: 00b899ca867ca6f42916274430998db1, type: 2}

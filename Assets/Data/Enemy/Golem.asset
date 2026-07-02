@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Golem
   m_EditorClassIdentifier: 
   <Enemy>k__BackingField:
+    <Id>k__BackingField: Golem
     <Health>k__BackingField: 10
     <Damage>k__BackingField: 1
     <Reward>k__BackingField: {fileID: 11400000, guid: a0bbcadbd79a4454ab7ebf58c3afbb7b, type: 2}

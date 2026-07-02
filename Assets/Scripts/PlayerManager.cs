@@ -1,12 +1,12 @@
 using MessagePipe;
-using System.Linq;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using Random = System.Random;
 
-public class PlayerManager : ICharacter
+public class PlayerManager
 {
-    public Stats Stats => _data.Stats;
-    public Weapon Weapon => _data.Weapon;
-
     private PlayerData _data;
     private PlayerData _snapshot;
     private GameDatabaseSO _database;
@@ -19,58 +19,62 @@ public class PlayerManager : ICharacter
 
         _data = new PlayerData(0, new Weapon(), new Stats(0, 0, 0), 
             new Dictionary<string, int>(), new List<BonusBase>());
-        _snapshot = _data.Clone();
+        SaveSnapshot();
     }
 
-    public PlayerData GetPlayer()
-    {
-        return _data.Clone();
-    }
+    public PlayerData GetPlayerSnapshot() => _data.Clone();
+
+    public void SaveSnapshot() => _snapshot = _data.Clone();
 
     public void GenerateStats()
     {
-        _data.GenerateStats();
-        _data.SetHealth(CalculateMaxHealth());
+        Stats newStats;
+        Random rand = new();
+
+        do newStats = new Stats(rand.Next(1, 4), rand.Next(1, 4), rand.Next(1, 4));
+        while (_data.Stats.Equals(newStats));
+
+        _data.Stats = newStats;
+        _data.Health = CalculateMaxHealth();
+
         NotifyUI();
     }
 
     public void PickClass(ClassSO so)
     {
         _data.Restore(_snapshot);
-        _data.LevelUp(so.Id);
-        _data.ApplyBonus(so);
-        _data.SetHealth(CalculateMaxHealth());
+        _data.Classes[so.Id] = _data.Classes.GetValueOrDefault(so.Id, 0) + 1;
+
+        ApplyClassBonuses(so);
 
         if (_data.Classes.Values.Sum() == 1)
-            _data.EquipWeapon(so.Weapon.Weapon);
+            _data.Weapon = so.Weapon.Weapon;
 
+        _data.Health = CalculateMaxHealth();
+        NotifyUI();
+    }
+
+    private void ApplyClassBonuses(ClassSO data)
+    {
+        if (!_data.Classes.TryGetValue(data.Id, out int currentLevel)) return;
+
+        var bonus = Array.Find(data.Bonus, x => x.UnlockLevel == currentLevel);
+        if (bonus.ClassBonus != null) _data.Bonuses.Add(bonus.ClassBonus);
+
+        var statBonus = Array.Find(data.StatBonus, x => x.UnlockLevel == currentLevel);
+        if (!statBonus.Stats.IsZero()) _data.Stats += statBonus.Stats;
+    }
+
+    public void EquipWeapon(Weapon weapon)
+    {
+        _data.Weapon = weapon;
+        SaveSnapshot();
         NotifyUI();
     }
 
     public bool IsReadyToBattle(int requiredLevel)
     {
         return !_data.Stats.IsZero() && _data.Classes.Values.Sum() == requiredLevel;
-    }
-
-    public void RestoreHealth()
-    {
-        _data.SetHealth(CalculateMaxHealth());
-        NotifyUI();
-    }
-
-    public void SaveSnapshot()
-    {
-        _snapshot = _data.Clone();
-    }
-
-    public int CalculateBonusDamage(TurnData data, BonusType type)
-    {
-        return _data.CalculateBonusDamage(data, type);
-    }
-
-    public void TakeDamage(int damage)
-    {
-        _data.SetHealth(_data.Health - damage);
     }
 
     private int CalculateMaxHealth()

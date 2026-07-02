@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Slime
   m_EditorClassIdentifier: 
   <Enemy>k__BackingField:
+    <Id>k__BackingField: Slime
     <Health>k__BackingField: 8
     <Damage>k__BackingField: 1
     <Reward>k__BackingField: {fileID: 11400000, guid: 90286069e8f54884988b435dc82c1404, type: 2}

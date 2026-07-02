@@ -12,5 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 237c1de360de0804abe2a9c8d94c0021, type: 3}
   m_Name: Skeleton
   m_EditorClassIdentifier: 
-  _id: 6
-  _bonusType: 1
+  <Type>k__BackingField: 1

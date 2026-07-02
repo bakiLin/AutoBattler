@@ -3,10 +3,10 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "SO/Bonus/Skeleton", fileName = "Skeleton")]
 public class Skeleton : BonusBase
 {
-    public override int Use(TurnData battleData)
+    public override int Use(BattleCharacter attacker, BattleCharacter target, int turn)
     {
-        if (battleData.Weapon.Type == WeaponType.Bludgeoning)
-            return battleData.Attacker.Strength + battleData.Weapon.Damage;
+        if (attacker.Weapon.Type == WeaponType.Bludgeoning)
+            return attacker.Stats.Strength + attacker.Weapon.Damage;
         return 0;
     }
 }

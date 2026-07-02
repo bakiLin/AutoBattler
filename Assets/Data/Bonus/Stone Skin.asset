@@ -12,5 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18465aa7507ebe445868fa53f5a8a51f, type: 3}
   m_Name: Stone Skin
   m_EditorClassIdentifier: 
-  _id: 4
-  _bonusType: 1
+  <Type>k__BackingField: 1

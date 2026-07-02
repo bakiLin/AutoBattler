@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Ghost
   m_EditorClassIdentifier: 
   <Enemy>k__BackingField:
+    <Id>k__BackingField: Ghost
     <Health>k__BackingField: 6
     <Damage>k__BackingField: 3
     <Reward>k__BackingField: {fileID: 11400000, guid: fb0d8a98d44a93a4e8d7cc31965c5e4c, type: 2}

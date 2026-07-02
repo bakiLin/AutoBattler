@@ -1,65 +1,94 @@
+using Cysharp.Threading.Tasks;
+using MessagePipe;
+using System;
+using System.Threading;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using VContainer;
+
+[Serializable]
+public struct BattleCharacterUI
+{
+    [field: SerializeField] public TextMeshProUGUI Name { get; private set; }
+    [field: SerializeField] public TextMeshProUGUI Health { get; private set; }
+    [field: SerializeField] public TextMeshProUGUI Damage { get; private set; }
+    [field: SerializeField] public TextMeshProUGUI Strength { get; private set; }
+    [field: SerializeField] public TextMeshProUGUI Dexterity { get; private set; }
+    [field: SerializeField] public TextMeshProUGUI Endurance { get; private set; }
+    [field: SerializeField] public VerticalLayoutGroup Bonuses { get; private set; }
+
+    public void SetMainInfo(BattleCharacter character, TextMeshProUGUI bonusPrefab)
+    {
+        Name.text = character.Id;
+        Health.text = character.Health.ToString();
+        Damage.text = (character.Weapon.Damage + character.Stats.Strength).ToString();
+        Strength.text = character.Stats.Strength.ToString();
+        Dexterity.text = character.Stats.Dexterity.ToString();
+        Endurance.text = character.Stats.Endurance.ToString();
+
+        var container = Bonuses.transform;
+        for (int i = container.childCount - 1; i >= 0; i--)
+            GameObject.Destroy(container.GetChild(i).gameObject);
+
+        foreach (var bonus in character.Bonuses)
+        {
+            var item = GameObject.Instantiate(bonusPrefab, container);
+            item.text = bonus.name;
+        }
+
+        Bonuses.CalculateLayoutInputHorizontal();
+        Bonuses.CalculateLayoutInputVertical();
+        Bonuses.SetLayoutHorizontal();
+        Bonuses.SetLayoutVertical();
+    }
+
+    public void SetHealth(int health)
+    {
+        Health.text = health.ToString();
+    }
+}
 
 public class BattleUI : MonoBehaviour
 {
-    [SerializeField]
-    private BattleManager _battleManager;
+    [SerializeField] private TextMeshProUGUI _bonusPrefab;
+    [SerializeField] private TextMeshProUGUI _status;
+    [SerializeField] private BattleCharacterUI _player;
+    [SerializeField] private BattleCharacterUI _enemy;
 
-    //[SerializeField]
-    //private PlayerSO _player;
+    private int _lastPlayerHealth = -1;
+    private int _lastEnemyHealth = -1;
 
-    [Header("PLAYER")]
-    [SerializeField] private TextMeshProUGUI _playerHealth;
-    [SerializeField] private TextMeshProUGUI _playerDamage;
-    [SerializeField] private TextMeshProUGUI _playerStrength;
-    [SerializeField] private TextMeshProUGUI _playerDexterity;
-    [SerializeField] private TextMeshProUGUI _playerEndurance;
-    [SerializeField] private TextMeshProUGUI[] _playerBonus;
+    [Inject]
+    private void Construct(IAsyncSubscriber<StartBattleMessage> startBattleSub,
+        ISubscriber<UpdateUIInBattleMessage> updateUIInBattleSub, 
+        ISubscriber<SetBattleStatusMessage> setBattleStatus)
+    {
+        DisposableBag.Create(
+            startBattleSub.Subscribe(SetupBattleUI),
+            updateUIInBattleSub.Subscribe(UpdateBattleHealth),
+            setBattleStatus.Subscribe(x => _status.text = x.Status)
+        ).AddTo(destroyCancellationToken);
+    }
 
-    [Header("ENEMY")]
-    [SerializeField] private TextMeshProUGUI _enemyName;
-    [SerializeField] private TextMeshProUGUI _enemyHealth;
-    [SerializeField] private TextMeshProUGUI _enemyDamage;
-    [SerializeField] private TextMeshProUGUI _enemyStrength;
-    [SerializeField] private TextMeshProUGUI _enemyDexterity;
-    [SerializeField] private TextMeshProUGUI _enemyEndurance;
-    [SerializeField] private TextMeshProUGUI _enemyBonus;
+    private async UniTask SetupBattleUI(StartBattleMessage message, CancellationToken token)
+    {
+        _player.SetMainInfo(message.Player, _bonusPrefab);
+        _enemy.SetMainInfo(message.Enemy, _bonusPrefab);
+    }
 
-    //private void OnEnable()
-    //{
-    //    _player.OnUpdateHealth += UpdatePlayerStats;
-    //    _battleManager.OnUpdateEnemyUI += UpdateEnemyStats;
-    //}
+    private void UpdateBattleHealth(UpdateUIInBattleMessage message)
+    {
+        if (_lastPlayerHealth != message.PlayerCurrentHealth)
+        {
+            _lastPlayerHealth = message.PlayerCurrentHealth;
+            _player.SetHealth(message.PlayerCurrentHealth);
+        }
 
-    //private void OnDisable()
-    //{
-    //    _player.OnUpdateHealth -= UpdatePlayerStats;
-    //    _battleManager.OnUpdateEnemyUI -= UpdateEnemyStats;
-    //}
-
-    //private void UpdatePlayerStats()
-    //{
-    //    _playerHealth.text = _player.Health.ToString();
-    //    _playerDamage.text = (_player.Weapon.Weapon.Damage + _player.Stats.Strength).ToString();
-    //    _playerStrength.text = _player.Stats.Strength.ToString();
-    //    _playerDexterity.text = _player.Stats.Dexterity.ToString();
-    //    _playerEndurance.text = _player.Stats.Endurance.ToString();
-
-    //    for (int i = 0; i < _player.BonusList.Count; i++)
-    //        _playerBonus[i].text = _player.BonusList[i].name.ToString();
-    //}
-
-    //private void UpdateEnemyStats(EnemySO enemy)
-    //{
-    //    _enemyName.text = enemy.name;
-    //    _enemyHealth.text = enemy.Health.ToString();
-    //    _enemyDamage.text = (enemy.Damage + enemy.Stats.Strength).ToString();
-    //    _enemyStrength.text = enemy.Stats.Strength.ToString();
-    //    _enemyDexterity.text = enemy.Stats.Dexterity.ToString();
-    //    _enemyEndurance.text = enemy.Stats.Endurance.ToString();
-
-    //    if (enemy.Bonus != null) _enemyBonus.text = enemy.Bonus.name.ToString();
-    //    else _enemyBonus.text = "";
-    //}
+        if (_lastEnemyHealth != message.EnemyCurrentHealth)
+        {
+            _lastEnemyHealth = message.EnemyCurrentHealth;
+            _enemy.SetHealth(message.EnemyCurrentHealth);
+        }
+    }
 }

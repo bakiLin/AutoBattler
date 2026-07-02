@@ -1,137 +1,120 @@
 using Cysharp.Threading.Tasks;
 using MessagePipe;
+using System;
+using System.Threading;
 using Random = System.Random;
 
 public class BattleManager
 {
     private PlayerManager _playerManager;
     private GameDatabaseSO _database;
-    private Random _random = new Random();
+    private IAsyncPublisher<StartBattleMessage> _startBattle;
+    private IPublisher<UpdateUIInBattleMessage> _updateUIInBattle;
+    private IPublisher<BattleVictoryMessage> _battleVictory;
+    private IPublisher<GameOverMessage> _gameOver;
+    private IPublisher<SetBattleStatusMessage> _setBattleStatus;
+
+    private readonly Random _random = new();
     private int _requiredLevel = 1;
     private int _winCount = 0;
-    private IPublisher<StartBattleMessage> _startBattle;
-    private IPublisher<UpdateUIInBattleMessage> _updateUIInBattle;
+    private const int TurnDelay = 1200; // milliseconds
 
     private BattleManager(PlayerManager playerManager, GameDatabaseSO database,
-        IPublisher<StartBattleMessage> startBattle, IPublisher<UpdateUIInBattleMessage> updateUIInBattle)
+        IAsyncPublisher<StartBattleMessage> startBattle, IPublisher<UpdateUIInBattleMessage> updateUIInBattle,
+        IPublisher<BattleVictoryMessage> battleVictory, IPublisher<GameOverMessage> gameOver,
+        IPublisher<SetBattleStatusMessage> setBattleStatus)
     {
         _playerManager = playerManager;
         _database = database;
         _startBattle = startBattle;
         _updateUIInBattle = updateUIInBattle;
+        _battleVictory = battleVictory;
+        _gameOver = gameOver;
+        _setBattleStatus = setBattleStatus;
     }
 
-    public async UniTask StartBattle()
+    public async UniTask StartBattle(CancellationToken cancellationToken = default)
     {
-        if (_playerManager.IsReadyToBattle(_requiredLevel))
+        if (!_playerManager.IsReadyToBattle(_requiredLevel)) return;
+        _requiredLevel++;
+
+        BattleCharacter player = new BattlePlayer(_playerManager.GetPlayerSnapshot());
+        BattleCharacter enemy = new BattleEnemy(_database.GetRandomEnemy());
+
+        _setBattleStatus.Publish(new SetBattleStatusMessage($"{player.Id} vs {enemy.Id}"));
+        await _startBattle.PublishAsync(new StartBattleMessage(player, enemy));
+        await UniTask.Delay(TurnDelay, cancellationToken: cancellationToken);
+
+        BattleCharacter attacker = player.Stats.Dexterity >= enemy.Stats.Dexterity ? player : enemy;
+        BattleCharacter target = attacker == player ? enemy : player;
+
+        int playerTurnCount = 0;
+        int enemyTurnCount = 0;
+
+        while (player.Health > 0 && enemy.Health > 0)
         {
-            var enemy = _database.GetRandomEnemy();
-            enemy.SetMaxHealth();
-            var player = _playerManager.GetPlayer();
-            _startBattle.Publish(new StartBattleMessage());
+            int currentTurnCount = (attacker == player) ? ++playerTurnCount : ++enemyTurnCount;
 
-            int playerTurnCount = 0;
-            int enemyTurnCount = 0;
-            int totalTurnCount = 0;
-            string status = "Battle";
-            bool playerTurn = player.Stats.Dexterity >= enemy.Stats.Dexterity;
+            _setBattleStatus.Publish(new SetBattleStatusMessage($"{attacker.Id}'s turn"));
+            await UniTask.Delay(TurnDelay, cancellationToken: cancellationToken);
 
-            // delay before start
-
-            while (true)
+            if (IsAttackSuccessful(attacker.Stats.Dexterity, target.Stats.Dexterity))
             {
-                if (playerTurn) status = "Player turn";
-                else status = $"{enemy.Id} turn";
-
-                // delay before attack
-
-                if (playerTurn)
-                {
-                    if (IsAttackSuccessful(player.Stats.Dexterity, enemy.Stats.Dexterity))
-                    {
-                        playerTurnCount++;
-                        int damage = CalculateDamage(player, enemy, player.Weapon, playerTurnCount);
-                        enemy.SetHealth(enemy.Health - damage);
-
-                        _updateUIInBattle.Publish(new UpdateUIInBattleMessage(
-                            player.Health, enemy.Health));
-
-                        if (enemy.Health == 0)
-                        {
-                            status = "Player won";
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    if (IsAttackSuccessful(enemy.Stats.Dexterity, player.Stats.Dexterity))
-                    {
-                        enemyTurnCount++;
-                        int damage = CalculateDamage(enemy, player, new Weapon(enemy.Damage), enemyTurnCount);
-                        player.SetHealth(player.Health - damage);
-
-                        _updateUIInBattle.Publish(new UpdateUIInBattleMessage(
-                            player.Health, enemy.Health));
-
-                        if (player.Health == 0)
-                        {
-                            status = $"{enemy.Id} won";
-                            break;
-                        }
-                    }
-                }
-
-                playerTurn = !playerTurn;
-                // delay
-            }
-            // delay
-
-            if (player.Health > 0)
-            {
-                _winCount++;
-
-                if (_winCount == 5)
-                {
-                    status = "Victory";
-                    // delay
-                    // game over
-                }
-
-                // copy player data to save state
-                // end battle
+                int damage = CalculateDamage(attacker, target, currentTurnCount);
+                target.TakeDamage(damage);
+                _updateUIInBattle.Publish(new UpdateUIInBattleMessage(player.Health, enemy.Health));
+                _setBattleStatus.Publish(new SetBattleStatusMessage($"Success: {damage} dmg"));
             }
             else
             {
-                status = "Game Over";
-                // delay
-                // game over
+                _setBattleStatus.Publish(new SetBattleStatusMessage($"Miss"));
             }
+
+            await UniTask.Delay(TurnDelay, cancellationToken: cancellationToken);
+            (attacker, target) = (target, attacker);
         }
+
+        await HandleBattleResult(player as BattlePlayer, enemy as BattleEnemy, cancellationToken);
     }
 
     private bool IsAttackSuccessful(int attackerDex, int targetDex)
     {
-        int chance = _random.Next(1, attackerDex + targetDex + 1);
-
-        if (chance <= targetDex)
-        {
-            //_audioManager.Play("miss");
-            //_status.text = "Miss";
-            return false;
-        }
-
-        //_audioManager.Play("hit");
-        //_status.text = "Success";
-        return true;
+        return _random.Next(1, attackerDex + targetDex + 1) > targetDex;
     }
 
-    private int CalculateDamage(ICharacter attacker, ICharacter target, Weapon weapon, int turn)
+    private int CalculateDamage(BattleCharacter attacker, BattleCharacter target, int turn)
     {
-        var battleData = new TurnData(attacker.Stats, target.Stats, weapon, turn);
-        int damage = weapon.Damage + attacker.Stats.Strength;
-        damage += attacker.CalculateBonusDamage(battleData, BonusType.Attack);
-        damage += target.CalculateBonusDamage(battleData, BonusType.Defence);
-        return damage;
+        int damage = attacker.Weapon.Damage + attacker.Stats.Strength;
+        damage += attacker.CalculateBonusDamage(attacker, target, turn, BonusType.Attack);
+        damage += target.CalculateBonusDamage(attacker, target, turn, BonusType.Defence);
+        return Math.Max(1, damage);
+    }
+
+    private async UniTask HandleBattleResult(BattlePlayer player, BattleEnemy enemy, CancellationToken token)
+    {
+        if (player.Health > 0)
+        {
+            _setBattleStatus.Publish(new SetBattleStatusMessage($"Victory"));
+            await UniTask.Delay(TurnDelay, cancellationToken: token);
+
+            _winCount++;
+            if (_winCount == 5)
+            {
+                _gameOver.Publish(new GameOverMessage());
+            }
+            else
+            {
+                _playerManager.SaveSnapshot();
+                _battleVictory.Publish(new BattleVictoryMessage(enemy.Reward, () => {
+                    _playerManager.EquipWeapon(enemy.Reward);
+                }));
+            }
+        }
+        else
+        {
+            _setBattleStatus.Publish(new SetBattleStatusMessage($"Game Over"));
+            await UniTask.Delay(TurnDelay, cancellationToken: token);
+            _gameOver.Publish(new GameOverMessage());
+        }
     }
 }

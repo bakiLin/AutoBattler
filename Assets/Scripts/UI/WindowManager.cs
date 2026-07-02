@@ -1,127 +1,140 @@
-using UnityEngine;
-using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using MessagePipe;
+using System;
+using System.Threading;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using VContainer;
 
 public class WindowManager : MonoBehaviour
 {
-    [SerializeField]
-    private BattleManager _battleManager;
-
-    //[SerializeField]
-    //private PlayerSO _player;
-
-    [SerializeField]
-    private float _animationTime;
-
-    [Header("WINDOW")]
-    [SerializeField] private RectTransform _characterWindow;
-    [SerializeField] private RectTransform _battleWindow;
-    [SerializeField] private RectTransform _weaponWindow;
+    [Header("WINDOWS")]
+    [SerializeField] private RectTransform _character;
+    [SerializeField] private RectTransform _battle;
+    [SerializeField] private RectTransform _weaponEquipment;
     [SerializeField] private RectTransform _status;
 
-    [Header("BUTTON")]
-    [SerializeField] private GameObject _generateButton;
-    [SerializeField] private GameObject _takeWeaponButton;
-    [SerializeField] private RectTransform _battleButton;
-    [SerializeField] private RectTransform _replayButton;
+    [Header("BUTTONS / ELEMENTS")]
+    [SerializeField] private Button _generate;
+    [SerializeField] private Button _takeWeapon;
+    [SerializeField] private Button _rejectWeapon;
+    [SerializeField] private Button _replay;
+    [SerializeField] private RectTransform _startBattle;
+    [SerializeField] private float _animationTime = 0.4f;
 
-    //private void OnEnable()
-    //{
-    //    _battleManager.OnStartBattle += BattleWindow;
-    //    _battleManager.OnEndBattle += WeaponWindow;
-    //    _battleManager.OnGameOver += GameOver;
-    //}
-
-    //private void OnDisable()
-    //{
-    //    _battleManager.OnStartBattle -= BattleWindow;
-    //    _battleManager.OnEndBattle -= WeaponWindow;
-    //    _battleManager.OnGameOver -= GameOver;
-    //}
+    [Inject]
+    private void Construct(IAsyncSubscriber<StartBattleMessage> startBattleSub,
+        ISubscriber<BattleVictoryMessage> battleVictorySub, ISubscriber<GameOverMessage> gameOverSub)
+    {
+        DisposableBag.Create(
+            startBattleSub.Subscribe(OnBattleStarted),
+            battleVictorySub.Subscribe(x => OnBattleWon(x.OnClickAction).Forget()),
+            gameOverSub.Subscribe(_ => OnGameOver().Forget())
+        ).AddTo(destroyCancellationToken);
+    }
 
     private void Start()
     {
-        Invoke(nameof(ShowStartUI), .2f);
+        ShowMenuUI();
     }
 
-    private void ShowStartUI()
+    private void ShowMenuUI()
     {
-        MoveUIDown(ref _characterWindow, 0f);
-        MoveUIDown(ref _battleButton, -80f);
+        MoveUIDown(_character, 0f).Forget();
+        MoveUIDown(_startBattle, -80f).Forget();
     }
 
-    private void BattleWindow()
+    private async UniTask OnBattleStarted(StartBattleMessage message, CancellationToken token)
     {
-        _characterWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
-        _battleButton.DOAnchorPosY(1200f, _animationTime)
-            .SetEase(Ease.Linear)
-            .OnComplete(() => 
-            {
-                _generateButton.SetActive(false);
+        _generate.interactable = false;
+        var startBattle = _startBattle.GetComponent<Button>();
+        startBattle.interactable = false;
 
-                MoveUIDown(ref _battleWindow, 0f);
-                MoveUIDown(ref _status, -90f);
-            });
+        await UniTask.WhenAll(
+            _character.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask(),
+            _startBattle.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.Linear).ToUniTask()
+        );
+
+        if (_generate.gameObject.activeSelf)
+            _generate.gameObject.SetActive(false);
+        startBattle.interactable = true;
+
+        await UniTask.WhenAll(
+            MoveUIDown(_battle, 0f),
+            MoveUIDown(_status, -90f)
+        );
     }
 
-    //private void WeaponWindow(WeaponSO weapon)
-    //{
-    //    _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
-    //    _battleWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
-    //        .OnComplete(() =>
-    //        {
-    //            var button = _takeWeaponButton.GetComponent<Button>();
-    //            button.onClick.RemoveAllListeners();
-    //            button.onClick.AddListener(() => {
-    //                AudioManager.Instance.Play("button");
-    //                _player.Weapon = weapon;
-    //                CharacterWindow();
-    //            });
-
-    //            MoveUIDown(ref _status, -90f);
-    //            MoveUIDown(ref _weaponWindow, 0f);
-    //        });
-    //}
-
-    public void CharacterWindow()
+    private async UniTask OnBattleWon(Action action, CancellationToken token = default)
     {
-        _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
-        _weaponWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
-            .OnComplete(() => ShowStartUI());
+        await UniTask.WhenAll(
+            _status.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask(cancellationToken: token),
+            _battle.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask(cancellationToken: token)
+        );
+
+        _rejectWeapon.onClick.RemoveAllListeners();
+        _rejectWeapon.onClick.AddListener(() => ReturnToCharacterWindow().Forget());
+
+        _takeWeapon.onClick.RemoveAllListeners();
+        _takeWeapon.onClick.AddListener(() => {
+            action.Invoke();
+            ReturnToCharacterWindow().Forget();
+        });
+
+        await UniTask.WhenAll(
+            MoveUIDown(_status, -90f),
+            MoveUIDown(_weaponEquipment, 0f)
+        );
     }
 
-    private void GameOver()
+    private async UniTask ReturnToCharacterWindow()
     {
-        _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
-        _battleWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
-            .OnComplete(() =>
-            {
-                var button = _replayButton.GetComponent<Button>();
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => Replay());
-
-                MoveUIDown(ref _replayButton, 0f);
-                _status.DOAnchorPosY(-90f, _animationTime).SetEase(Ease.Linear);
-            });
+        await UniTask.WhenAll(
+            _status.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask(),
+            _weaponEquipment.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask()
+        );
+        ShowMenuUI();
     }
 
-    public void Replay()
+    private async UniTask OnGameOver()
     {
-        AudioManager.Instance.Play("button");
-        _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
-        _replayButton.DOAnchorPosY(1200f, _animationTime)
-            .SetEase(Ease.InBack)
-            .OnComplete(() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex));
+        await UniTask.WhenAll(
+            _status.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask(),
+            _battle.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask()
+        );
+
+        _replay.onClick.RemoveAllListeners();
+        _replay.onClick.AddListener(() => OnReplayClicked().Forget());
+
+        await UniTask.WhenAll(
+            MoveUIDown((RectTransform)_replay.transform, 0f),
+            _status.DOAnchorPosY(-90f, _animationTime).SetEase(Ease.Linear).ToUniTask()
+        );
     }
 
-    private void MoveUIDown(ref RectTransform rectTransform, float position)
+    private async UniTask OnReplayClicked()
     {
+        var rect = (RectTransform)_replay.transform;
+        await UniTask.WhenAll(
+            _status.DOAnchorPosY((Screen.height), _animationTime).SetEase(Ease.InBack).ToUniTask(),
+            rect.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack).ToUniTask()
+        );
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private async UniTask MoveUIDown(RectTransform rectTransform, float targetPositionY, 
+        CancellationToken token = default)
+    {
+        if (rectTransform == null) return;
+
         var anchoredPosition = rectTransform.anchoredPosition;
-        anchoredPosition.y = 1200f;
+        anchoredPosition.y = Screen.height;
         rectTransform.anchoredPosition = anchoredPosition;
 
         rectTransform.gameObject.SetActive(true);
-        rectTransform.DOAnchorPosY(position, _animationTime).SetEase(Ease.Linear);
+        await rectTransform.DOAnchorPosY(targetPositionY, _animationTime)
+            .SetEase(Ease.Linear).ToUniTask(cancellationToken: token);
     }
 }
