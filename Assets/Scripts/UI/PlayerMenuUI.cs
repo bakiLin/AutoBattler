@@ -37,14 +37,25 @@ public class PlayerMenuUI : MonoBehaviour
     private Dictionary<string, int> _lastClasses = new();
 
     [Inject]
-    private void Construct(ISubscriber<UpdatePlayerInMenuMessage> updatePlayerInMenu)
+    private void Construct(ISubscriber<UpdatePlayerInMenuMessage> updatePlayerInMenu,
+        ISubscriber<BattleVictoryMessage> battleVictory)
     {
         _lastBonuses = new string[_bonuses.Length];
         Array.Fill(_lastBonuses, string.Empty);
 
         DisposableBag.Create(
-            updatePlayerInMenu.Subscribe(UpdateUI)
+            updatePlayerInMenu.Subscribe(UpdateUI),
+            battleVictory.Subscribe(x => SetClassButtons(x.BattleNumber))
         ).AddTo(destroyCancellationToken);
+    }
+
+    private void SetClassButtons(int battleNumber)
+    {
+        if (battleNumber >= 4 && _classes[0].LevelUpButton.activeSelf)
+        {
+            foreach (var item in _classes)
+                item.LevelUpButton.SetActive(false);
+        }
     }
 
     private void UpdateUI(UpdatePlayerInMenuMessage message)
@@ -88,8 +99,6 @@ public class PlayerMenuUI : MonoBehaviour
 
             if (_lastClasses.GetValueOrDefault(id, -1) != level)
                 item.LevelText.text = (_lastClasses[id] = level).ToString();
-
-            item.LevelUpButton?.SetActive(level < 3);
         }
     }
 

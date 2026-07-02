@@ -2,7 +2,6 @@ using MessagePipe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using Random = System.Random;
 
 public class PlayerManager
@@ -72,9 +71,10 @@ public class PlayerManager
         NotifyUI();
     }
 
-    public bool IsReadyToBattle(int requiredLevel)
+    public bool IsReadyToBattle(int battleCounter)
     {
-        return !_data.Stats.IsZero() && _data.Classes.Values.Sum() == requiredLevel;
+        return (!_data.Stats.IsZero() && _data.Classes.Values.Sum() == battleCounter) 
+            || battleCounter >= 4;
     }
 
     private int CalculateMaxHealth()

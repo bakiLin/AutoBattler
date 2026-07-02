@@ -75,6 +75,9 @@ public class BattleUI : MonoBehaviour
     {
         _player.SetMainInfo(message.Player, _bonusPrefab);
         _enemy.SetMainInfo(message.Enemy, _bonusPrefab);
+
+        _lastPlayerHealth = message.Player.Health;
+        _lastEnemyHealth = message.Enemy.Health;
     }
 
     private void UpdateBattleHealth(UpdateUIInBattleMessage message)

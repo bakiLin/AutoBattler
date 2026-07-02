@@ -15,9 +15,9 @@ public class BattleManager
     private IPublisher<SetBattleStatusMessage> _setBattleStatus;
 
     private readonly Random _random = new();
-    private int _requiredLevel = 1;
+    private int _battleCounter = 1;
     private int _winCount = 0;
-    private const int TurnDelay = 1200; // milliseconds
+    private const int TurnDelay = 200; // milliseconds
 
     private BattleManager(PlayerManager playerManager, GameDatabaseSO database,
         IAsyncPublisher<StartBattleMessage> startBattle, IPublisher<UpdateUIInBattleMessage> updateUIInBattle,
@@ -35,8 +35,8 @@ public class BattleManager
 
     public async UniTask StartBattle(CancellationToken cancellationToken = default)
     {
-        if (!_playerManager.IsReadyToBattle(_requiredLevel)) return;
-        _requiredLevel++;
+        if (!_playerManager.IsReadyToBattle(_battleCounter)) return;
+        _battleCounter++;
 
         BattleCharacter player = new BattlePlayer(_playerManager.GetPlayerSnapshot());
         BattleCharacter enemy = new BattleEnemy(_database.GetRandomEnemy());
@@ -105,7 +105,7 @@ public class BattleManager
             else
             {
                 _playerManager.SaveSnapshot();
-                _battleVictory.Publish(new BattleVictoryMessage(enemy.Reward, () => {
+                _battleVictory.Publish(new BattleVictoryMessage(_battleCounter, enemy.Reward, () => {
                     _playerManager.EquipWeapon(enemy.Reward);
                 }));
             }
