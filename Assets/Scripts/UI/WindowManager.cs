@@ -50,8 +50,8 @@ public class WindowManager : MonoBehaviour
 
     private void ShowMenuUI(CancellationToken token)
     {
-        MoveUIDown(_character, 0f, token).Forget(Debug.LogException);
-        MoveUIDown(_startBattle, -80f, token).Forget(Debug.LogException);
+        MoveUI(_character, 0f, _database.AnimationTime, token).Forget(Debug.LogException);
+        MoveUI(_startBattle, -80f, _database.AnimationTime, token).Forget(Debug.LogException);
     }
 
     private async UniTask OnBattleStarted(StartBattleMessage message, CancellationToken token)
@@ -71,8 +71,8 @@ public class WindowManager : MonoBehaviour
             _generate.gameObject.SetActive(false);
 
         await UniTask.WhenAll(
-            MoveUIDown(_battle, 0f, token),
-            MoveUIDown(_status, -90f, token)
+            MoveUI(_battle, 0f, _database.AnimationTime, token),
+            MoveUI(_status, -90f, _database.AnimationTime, token)
         );
     
         _startBattle.GetComponent<Button>().interactable = true;
@@ -105,8 +105,8 @@ public class WindowManager : MonoBehaviour
         });
 
         await UniTask.WhenAll(
-            MoveUIDown(_status, -90f, token),
-            MoveUIDown(_weaponEquipment, 0f, token)
+            MoveUI(_status, -90f, _database.AnimationTime, token),
+            MoveUI(_weaponEquipment, 0f, _database.AnimationTime, token)
         );
     }
 
@@ -114,7 +114,7 @@ public class WindowManager : MonoBehaviour
     {
         await UniTask.WhenAll(
             _status.DOAnchorPosY(Screen.height, _database.AnimationTime)
-                .SetEase(Ease.InBack)
+                .SetEase(Ease.Linear)
                 .ToUniTask(cancellationToken: token),
             _weaponEquipment.DOAnchorPosY(Screen.height, _database.AnimationTime)
                 .SetEase(Ease.InBack)
@@ -128,7 +128,7 @@ public class WindowManager : MonoBehaviour
     {
         await UniTask.WhenAll(
             _status.DOAnchorPosY(Screen.height, _database.AnimationTime)
-                .SetEase(Ease.InBack)
+                .SetEase(Ease.Linear)
                 .ToUniTask(cancellationToken: token),
             _battle.DOAnchorPosY(Screen.height, _database.AnimationTime)
                 .SetEase(Ease.InBack)
@@ -143,7 +143,7 @@ public class WindowManager : MonoBehaviour
         });
 
         await UniTask.WhenAll(
-            MoveUIDown((RectTransform)_replay.transform, 0f, token),
+            MoveUI((RectTransform)_replay.transform, 0f, _database.AnimationTime, token),
             _status.DOAnchorPosY(-90f, _database.AnimationTime)
                 .SetEase(Ease.Linear)
                 .ToUniTask(cancellationToken: token)
@@ -156,10 +156,10 @@ public class WindowManager : MonoBehaviour
 
         await UniTask.WhenAll(
             _status.DOAnchorPosY(Screen.height, _database.AnimationTime)
-                .SetEase(Ease.InBack)
+                .SetEase(Ease.Linear)
                 .ToUniTask(cancellationToken: token),
-            rect.DOAnchorPosY(1200f, _database.AnimationTime)
-                .SetEase(Ease.InBack)
+            rect.DOAnchorPosY(Screen.height, _database.AnimationTime)
+                .SetEase(Ease.Linear)
                 .ToUniTask(cancellationToken: token)
         );
 
@@ -173,7 +173,7 @@ public class WindowManager : MonoBehaviour
         _soundManager.Get().Play(_database.ClickSound, destroyCancellationToken);
     }
 
-    private async UniTask MoveUIDown(RectTransform rectTransform, float targetPositionY, 
+    private async UniTask MoveUI(RectTransform rectTransform, float targetPositionY, float duration,
         CancellationToken token = default)
     {
         if (rectTransform == null) return;
@@ -184,7 +184,7 @@ public class WindowManager : MonoBehaviour
 
         rectTransform.gameObject.SetActive(true);
 
-        await rectTransform.DOAnchorPosY(targetPositionY, _database.AnimationTime)
+        await rectTransform.DOAnchorPosY(targetPositionY, duration)
             .SetEase(Ease.Linear)
             .ToUniTask(cancellationToken: token);
     }

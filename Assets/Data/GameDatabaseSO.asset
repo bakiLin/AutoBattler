@@ -27,4 +27,4 @@ MonoBehaviour:
   <AttackSound>k__BackingField: {fileID: 11400000, guid: a5072de5a3a2abe40879cee44a0568fb, type: 2}
   <MissSound>k__BackingField: {fileID: 11400000, guid: c7c2d69ff5a2ae644ab52ccff0f6a72a, type: 2}
   <AnimationTime>k__BackingField: 0.7
-  <TurnDelay>k__BackingField: 1200
+  <TurnDelay>k__BackingField: 1000

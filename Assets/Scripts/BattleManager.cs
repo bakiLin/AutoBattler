@@ -69,7 +69,7 @@ public class BattleManager
             else
             {
                 _setBattleStatus.Publish(new SetBattleStatusMessage($"Miss"));
-                _characterMissed.Publish(new CharacterMissedMessage());
+                _characterMissed.Publish(new CharacterMissedMessage(target == player));
             }
 
             await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken, cancelImmediately: true);

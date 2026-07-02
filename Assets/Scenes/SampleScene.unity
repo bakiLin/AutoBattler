@@ -169,6 +169,7 @@ MonoBehaviour:
   _bonusPrefab: {fileID: 6315223297904830226, guid: e256f434b556ad547a61f9b64fddf40f, type: 3}
   _status: {fileID: 1984615925}
   _player:
+    <Window>k__BackingField: {fileID: 832776415}
     <Name>k__BackingField: {fileID: 556084897}
     <Health>k__BackingField: {fileID: 1269892978}
     <Damage>k__BackingField: {fileID: 1988754034}
@@ -177,6 +178,7 @@ MonoBehaviour:
     <Endurance>k__BackingField: {fileID: 1326453355}
     <Bonuses>k__BackingField: {fileID: 357187824}
   _enemy:
+    <Window>k__BackingField: {fileID: 772032281}
     <Name>k__BackingField: {fileID: 25231300}
     <Health>k__BackingField: {fileID: 234114027}
     <Damage>k__BackingField: {fileID: 1989067383}
