@@ -22,12 +22,20 @@ public class WindowManager : MonoBehaviour
     [SerializeField] private Button _rejectWeapon;
     [SerializeField] private Button _replay;
     [SerializeField] private RectTransform _startBattle;
-    [SerializeField] private float _animationTime = 0.4f;
+
+    private ISoundManager _soundManager;
+    private GameDatabaseSO _database;
 
     [Inject]
     private void Construct(IAsyncSubscriber<StartBattleMessage> startBattleSub,
-        ISubscriber<BattleVictoryMessage> battleVictorySub, ISubscriber<GameOverMessage> gameOverSub)
+        ISubscriber<BattleVictoryMessage> battleVictorySub,
+        ISubscriber<GameOverMessage> gameOverSub,
+        ISoundManager soundManager,
+        GameDatabaseSO database)
     {
+        _soundManager = soundManager;
+        _database = database;
+
         DisposableBag.Create(
             startBattleSub.Subscribe(OnBattleStarted),
             battleVictorySub.Subscribe(x => OnBattleWon(x.OnClickAction).Forget()),
@@ -53,8 +61,8 @@ public class WindowManager : MonoBehaviour
         startBattle.interactable = false;
 
         await UniTask.WhenAll(
-            _character.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask(),
-            _startBattle.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.Linear).ToUniTask()
+            _character.DOAnchorPosY(Screen.height, _database.AnimationTime).SetEase(Ease.InBack).ToUniTask(),
+            _startBattle.DOAnchorPosY(Screen.height, _database.AnimationTime).SetEase(Ease.Linear).ToUniTask()
         );
 
         if (_generate.gameObject.activeSelf)
@@ -70,15 +78,21 @@ public class WindowManager : MonoBehaviour
     private async UniTask OnBattleWon(Action action, CancellationToken token = default)
     {
         await UniTask.WhenAll(
-            _status.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask(cancellationToken: token),
-            _battle.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask(cancellationToken: token)
+            _status.DOAnchorPosY(Screen.height, _database.AnimationTime).SetEase(Ease.InBack).ToUniTask(cancellationToken: token),
+            _battle.DOAnchorPosY(Screen.height, _database.AnimationTime).SetEase(Ease.InBack).ToUniTask(cancellationToken: token)
         );
 
         _rejectWeapon.onClick.RemoveAllListeners();
-        _rejectWeapon.onClick.AddListener(() => ReturnToCharacterWindow().Forget());
+        _rejectWeapon.onClick.AddListener(() =>
+        {
+            PlayClickSound();
+            ReturnToCharacterWindow().Forget();
+        });
 
         _takeWeapon.onClick.RemoveAllListeners();
-        _takeWeapon.onClick.AddListener(() => {
+        _takeWeapon.onClick.AddListener(() =>
+        {
+            PlayClickSound();
             action.Invoke();
             ReturnToCharacterWindow().Forget();
         });
@@ -92,8 +106,8 @@ public class WindowManager : MonoBehaviour
     private async UniTask ReturnToCharacterWindow()
     {
         await UniTask.WhenAll(
-            _status.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask(),
-            _weaponEquipment.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask()
+            _status.DOAnchorPosY(Screen.height, _database.AnimationTime).SetEase(Ease.InBack).ToUniTask(),
+            _weaponEquipment.DOAnchorPosY(Screen.height, _database.AnimationTime).SetEase(Ease.InBack).ToUniTask()
         );
         ShowMenuUI();
     }
@@ -101,16 +115,20 @@ public class WindowManager : MonoBehaviour
     private async UniTask OnGameOver()
     {
         await UniTask.WhenAll(
-            _status.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask(),
-            _battle.DOAnchorPosY(Screen.height, _animationTime).SetEase(Ease.InBack).ToUniTask()
+            _status.DOAnchorPosY(Screen.height, _database.AnimationTime).SetEase(Ease.InBack).ToUniTask(),
+            _battle.DOAnchorPosY(Screen.height, _database.AnimationTime).SetEase(Ease.InBack).ToUniTask()
         );
 
         _replay.onClick.RemoveAllListeners();
-        _replay.onClick.AddListener(() => OnReplayClicked().Forget());
+        _replay.onClick.AddListener(() =>
+        {
+            PlayClickSound();
+            OnReplayClicked().Forget();
+        });
 
         await UniTask.WhenAll(
             MoveUIDown((RectTransform)_replay.transform, 0f),
-            _status.DOAnchorPosY(-90f, _animationTime).SetEase(Ease.Linear).ToUniTask()
+            _status.DOAnchorPosY(-90f, _database.AnimationTime).SetEase(Ease.Linear).ToUniTask()
         );
     }
 
@@ -118,10 +136,15 @@ public class WindowManager : MonoBehaviour
     {
         var rect = (RectTransform)_replay.transform;
         await UniTask.WhenAll(
-            _status.DOAnchorPosY((Screen.height), _animationTime).SetEase(Ease.InBack).ToUniTask(),
-            rect.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack).ToUniTask()
+            _status.DOAnchorPosY(Screen.height, _database.AnimationTime).SetEase(Ease.InBack).ToUniTask(),
+            rect.DOAnchorPosY(1200f, _database.AnimationTime).SetEase(Ease.InBack).ToUniTask()
         );
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void PlayClickSound()
+    {
+        _soundManager.Get().Play(_database.ClickSound, destroyCancellationToken);
     }
 
     private async UniTask MoveUIDown(RectTransform rectTransform, float targetPositionY, 
@@ -134,7 +157,7 @@ public class WindowManager : MonoBehaviour
         rectTransform.anchoredPosition = anchoredPosition;
 
         rectTransform.gameObject.SetActive(true);
-        await rectTransform.DOAnchorPosY(targetPositionY, _animationTime)
+        await rectTransform.DOAnchorPosY(targetPositionY, _database.AnimationTime)
             .SetEase(Ease.Linear).ToUniTask(cancellationToken: token);
     }
 }

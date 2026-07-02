@@ -5,6 +5,7 @@ using UnityEngine;
 using VContainer;
 using System;
 using Cysharp.Threading.Tasks;
+using UnityEngine.UI;
 
 [Serializable]
 public struct ClassUI
@@ -26,23 +27,20 @@ public class PlayerMenuUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _weaponDamage;
 
     [SerializeField] private ClassUI[] _classes;
-    [SerializeField] private TextMeshProUGUI[] _bonuses;
+    [SerializeField] private VerticalLayoutGroup _bonuses;
+    [SerializeField] private TextMeshProUGUI _bonusPrefab;
 
     private int _lastHealth = -1;
     private int _lastStrength = -1;
     private int _lastDexterity = -1;
     private int _lastEndurance = -1;
     private string _lastWeaponId;
-    private string[] _lastBonuses;
     private Dictionary<string, int> _lastClasses = new();
 
     [Inject]
     private void Construct(ISubscriber<UpdatePlayerInMenuMessage> updatePlayerInMenu,
         ISubscriber<BattleVictoryMessage> battleVictory)
     {
-        _lastBonuses = new string[_bonuses.Length];
-        Array.Fill(_lastBonuses, string.Empty);
-
         DisposableBag.Create(
             updatePlayerInMenu.Subscribe(UpdateUI),
             battleVictory.Subscribe(x => SetClassButtons(x.BattleNumber))
@@ -104,15 +102,23 @@ public class PlayerMenuUI : MonoBehaviour
 
     private void UpdateBonuses(List<BonusBase> bonuses)
     {
-        for (int i = 0; i < _bonuses.Length; i++)
-        {
-            string newText = (bonuses != null && i < bonuses.Count) ? bonuses[i].name : string.Empty;
+        var container = _bonuses.transform;
 
-            if (_lastBonuses[i] != newText)
+        for (int i = container.childCount - 1; i >= 0; i--)
+            Destroy(container.GetChild(i).gameObject);
+
+        if (bonuses != null)
+        {
+            foreach (var bonus in bonuses)
             {
-                _lastBonuses[i] = newText;
-                _bonuses[i].text = newText;
+                var item = Instantiate(_bonusPrefab, container);
+                item.text = bonus.name;
             }
         }
+
+        _bonuses.CalculateLayoutInputHorizontal();
+        _bonuses.CalculateLayoutInputVertical();
+        _bonuses.SetLayoutHorizontal();
+        _bonuses.SetLayoutVertical();
     }
 }

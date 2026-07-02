@@ -13,16 +13,16 @@ public class BattleManager
     private IPublisher<BattleVictoryMessage> _battleVictory;
     private IPublisher<GameOverMessage> _gameOver;
     private IPublisher<SetBattleStatusMessage> _setBattleStatus;
+    private IPublisher<CharacterMissedMessage> _characterMissed;
 
     private readonly Random _random = new();
     private int _battleCounter = 1;
     private int _winCount = 0;
-    private const int TurnDelay = 200; // milliseconds
 
     private BattleManager(PlayerManager playerManager, GameDatabaseSO database,
         IAsyncPublisher<StartBattleMessage> startBattle, IPublisher<UpdateUIInBattleMessage> updateUIInBattle,
         IPublisher<BattleVictoryMessage> battleVictory, IPublisher<GameOverMessage> gameOver,
-        IPublisher<SetBattleStatusMessage> setBattleStatus)
+        IPublisher<SetBattleStatusMessage> setBattleStatus, IPublisher<CharacterMissedMessage> characterMissed)
     {
         _playerManager = playerManager;
         _database = database;
@@ -31,6 +31,7 @@ public class BattleManager
         _battleVictory = battleVictory;
         _gameOver = gameOver;
         _setBattleStatus = setBattleStatus;
+        _characterMissed = characterMissed;
     }
 
     public async UniTask StartBattle(CancellationToken cancellationToken = default)
@@ -43,7 +44,7 @@ public class BattleManager
 
         _setBattleStatus.Publish(new SetBattleStatusMessage($"{player.Id} vs {enemy.Id}"));
         await _startBattle.PublishAsync(new StartBattleMessage(player, enemy));
-        await UniTask.Delay(TurnDelay, cancellationToken: cancellationToken);
+        await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken);
 
         BattleCharacter attacker = player.Stats.Dexterity >= enemy.Stats.Dexterity ? player : enemy;
         BattleCharacter target = attacker == player ? enemy : player;
@@ -56,7 +57,7 @@ public class BattleManager
             int currentTurnCount = (attacker == player) ? ++playerTurnCount : ++enemyTurnCount;
 
             _setBattleStatus.Publish(new SetBattleStatusMessage($"{attacker.Id}'s turn"));
-            await UniTask.Delay(TurnDelay, cancellationToken: cancellationToken);
+            await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken);
 
             if (IsAttackSuccessful(attacker.Stats.Dexterity, target.Stats.Dexterity))
             {
@@ -68,9 +69,10 @@ public class BattleManager
             else
             {
                 _setBattleStatus.Publish(new SetBattleStatusMessage($"Miss"));
+                _characterMissed.Publish(new CharacterMissedMessage());
             }
 
-            await UniTask.Delay(TurnDelay, cancellationToken: cancellationToken);
+            await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken);
             (attacker, target) = (target, attacker);
         }
 
@@ -95,7 +97,7 @@ public class BattleManager
         if (player.Health > 0)
         {
             _setBattleStatus.Publish(new SetBattleStatusMessage($"Victory"));
-            await UniTask.Delay(TurnDelay, cancellationToken: token);
+            await UniTask.Delay(_database.TurnDelay, cancellationToken: token);
 
             _winCount++;
             if (_winCount == 5)
@@ -113,7 +115,7 @@ public class BattleManager
         else
         {
             _setBattleStatus.Publish(new SetBattleStatusMessage($"Game Over"));
-            await UniTask.Delay(TurnDelay, cancellationToken: token);
+            await UniTask.Delay(_database.TurnDelay, cancellationToken: token);
             _gameOver.Publish(new GameOverMessage());
         }
     }

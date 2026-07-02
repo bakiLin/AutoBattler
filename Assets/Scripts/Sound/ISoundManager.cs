@@ -1,1 +1,4 @@
-public interface ISoundManager { }
+public interface ISoundManager
+{
+    SoundEmitter Get();
+}

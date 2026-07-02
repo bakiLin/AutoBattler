@@ -23,3 +23,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9bb306a6f1930234ca029a16660155c4, type: 2}
   - {fileID: 11400000, guid: d6b60941036b24b4fba118c84a9049e5, type: 2}
   - {fileID: 11400000, guid: d2a2b0dea09333a46a51f36945741b17, type: 2}
+  <ClickSound>k__BackingField: {fileID: 11400000, guid: 33c1894c89074e141a6dd8931240130a, type: 2}
+  <AttackSound>k__BackingField: {fileID: 11400000, guid: a5072de5a3a2abe40879cee44a0568fb, type: 2}
+  <MissSound>k__BackingField: {fileID: 11400000, guid: c7c2d69ff5a2ae644ab52ccff0f6a72a, type: 2}
+  <AnimationTime>k__BackingField: 0.7
+  <TurnDelay>k__BackingField: 1200

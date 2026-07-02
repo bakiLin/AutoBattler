@@ -17,12 +17,11 @@ public class SoundManager : MonoBehaviour, ISoundManager
 
     private SoundEmitter CreateSoundEmitter()
     {
-        SoundEmitter emitter = Instantiate(_emitterPrefab);
-        emitter.transform.SetParent(transform);
+        SoundEmitter emitter = Instantiate(_emitterPrefab, transform);
         emitter.Pool = _pool;
         return emitter;
     }
-
+    
     private void OnGetFromPool(SoundEmitter emitter)
     {
         emitter.gameObject.SetActive(true);
