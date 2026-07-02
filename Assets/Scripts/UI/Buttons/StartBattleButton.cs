@@ -27,7 +27,8 @@ public class StartBattleButton : MonoBehaviour
     private void OnClick() 
     {
         _soundManager.Get().Play(_database.ClickSound, destroyCancellationToken);
-        _battleManager.StartBattle().Forget();
+        _button.interactable = false;
+        _battleManager.StartBattle(destroyCancellationToken).Forget(Debug.LogException);
     }
 
     private void OnDestroy()

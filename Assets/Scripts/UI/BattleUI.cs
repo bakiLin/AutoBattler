@@ -71,13 +71,18 @@ public class BattleUI : MonoBehaviour
         ).AddTo(destroyCancellationToken);
     }
 
-    private async UniTask SetupBattleUI(StartBattleMessage message, CancellationToken token)
+    private UniTask SetupBattleUI(StartBattleMessage message, CancellationToken token)
     {
+        if (token.IsCancellationRequested)
+            return UniTask.CompletedTask;
+
         _player.SetMainInfo(message.Player, _bonusPrefab);
         _enemy.SetMainInfo(message.Enemy, _bonusPrefab);
 
         _lastPlayerHealth = message.Player.Health;
         _lastEnemyHealth = message.Enemy.Health;
+
+        return UniTask.CompletedTask;
     }
 
     private void UpdateBattleHealth(UpdateUIInBattleMessage message)

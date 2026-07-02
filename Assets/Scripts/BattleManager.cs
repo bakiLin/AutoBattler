@@ -43,8 +43,8 @@ public class BattleManager
         BattleCharacter enemy = new BattleEnemy(_database.GetRandomEnemy());
 
         _setBattleStatus.Publish(new SetBattleStatusMessage($"{player.Id} vs {enemy.Id}"));
-        await _startBattle.PublishAsync(new StartBattleMessage(player, enemy));
-        await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken);
+        await _startBattle.PublishAsync(new StartBattleMessage(player, enemy), cancellationToken);
+        await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken, cancelImmediately: true);
 
         BattleCharacter attacker = player.Stats.Dexterity >= enemy.Stats.Dexterity ? player : enemy;
         BattleCharacter target = attacker == player ? enemy : player;
@@ -57,7 +57,7 @@ public class BattleManager
             int currentTurnCount = (attacker == player) ? ++playerTurnCount : ++enemyTurnCount;
 
             _setBattleStatus.Publish(new SetBattleStatusMessage($"{attacker.Id}'s turn"));
-            await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken);
+            await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken, cancelImmediately: true);
 
             if (IsAttackSuccessful(attacker.Stats.Dexterity, target.Stats.Dexterity))
             {
@@ -72,7 +72,7 @@ public class BattleManager
                 _characterMissed.Publish(new CharacterMissedMessage());
             }
 
-            await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken);
+            await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken, cancelImmediately: true);
             (attacker, target) = (target, attacker);
         }
 
@@ -97,7 +97,7 @@ public class BattleManager
         if (player.Health > 0)
         {
             _setBattleStatus.Publish(new SetBattleStatusMessage($"Victory"));
-            await UniTask.Delay(_database.TurnDelay, cancellationToken: token);
+            await UniTask.Delay(_database.TurnDelay, cancellationToken: token, cancelImmediately: true);
 
             _winCount++;
             if (_winCount == 5)
@@ -115,7 +115,7 @@ public class BattleManager
         else
         {
             _setBattleStatus.Publish(new SetBattleStatusMessage($"Game Over"));
-            await UniTask.Delay(_database.TurnDelay, cancellationToken: token);
+            await UniTask.Delay(_database.TurnDelay, cancellationToken: token, cancelImmediately: true);
             _gameOver.Publish(new GameOverMessage());
         }
     }

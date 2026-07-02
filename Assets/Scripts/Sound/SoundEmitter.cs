@@ -10,6 +10,7 @@ public class SoundEmitter : MonoBehaviour
 {
     private AudioSource _source;
     private IObjectPool<SoundEmitter> _pool;
+    private bool _released;
 
     public IObjectPool<SoundEmitter> Pool { set => _pool = value; }
 
@@ -20,6 +21,14 @@ public class SoundEmitter : MonoBehaviour
 
     public async UniTask Play(SoundDataSO data, CancellationToken token)
     {
+        _released = false;
+
+        if (data == null || data.Clip == null)
+        {
+            ReleaseToPool();
+            return;
+        }
+
         _source.clip = data.Clip;
         _source.outputAudioMixerGroup = data.Mixer;
         _source.loop = data.Loop;
@@ -36,10 +45,8 @@ public class SoundEmitter : MonoBehaviour
 
             if (!_source.loop)
             {
-                await UniTask.Delay((int)(_source.clip.length * 1000), cancellationToken: token,
-                    cancelImmediately: true);
-                _source.Stop();
-                _pool.Release(this);
+                await UniTask.Delay((int)(_source.clip.length * 1000), 
+                    cancellationToken: token, cancelImmediately: true);
             }
             else
             {
@@ -51,8 +58,20 @@ public class SoundEmitter : MonoBehaviour
         }
         catch (OperationCanceledException)
         {
-            _source.Stop();
-            _pool.Release(this);
         }
+        finally
+        {
+            ReleaseToPool();
+        }
+    }
+
+    private void ReleaseToPool()
+    {
+        if (_released) return;
+
+        _released = true;
+        _source.Stop();
+        _source.clip = null;
+        _pool?.Release(this);
     }
 }
