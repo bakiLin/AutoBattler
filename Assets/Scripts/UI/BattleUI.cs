@@ -62,16 +62,14 @@ public class BattleCharacterUI
     {
         Window.DOKill();
         Window.DOShakeAnchorPos(duration, 30f, 10, 90f);
-    }
+    }  
 
     public void Miss(float duration, float direction)
     {
         Window.DOKill();
         var seq = DOTween.Sequence();
         seq.Append(Window.DOAnchorPosX(Window.anchoredPosition.x + direction * 40f, duration * 0.5f).SetEase(Ease.OutSine));
-        //seq.Join(Window.DORotate(new Vector3(0, 0, -direction * 10f), duration * 0.5f).SetEase(Ease.OutSine));
         seq.Append(Window.DOAnchorPosX(Window.anchoredPosition.x, duration * 0.5f).SetEase(Ease.InSine));
-        //seq.Join(Window.DORotate(Vector3.zero, duration * 0.5f).SetEase(Ease.InSine));
     }
 }
 

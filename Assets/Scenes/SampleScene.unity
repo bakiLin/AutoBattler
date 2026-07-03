@@ -10508,6 +10508,7 @@ MonoBehaviour:
   _rejectWeapon: {fileID: 899389077}
   _replay: {fileID: 1463204383}
   _startBattle: {fileID: 1474155187}
+  _canvas: {fileID: 1954529723}
 --- !u!1 &1912643168
 GameObject:
   m_ObjectHideFlags: 0

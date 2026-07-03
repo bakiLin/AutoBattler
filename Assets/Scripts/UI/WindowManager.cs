@@ -23,8 +23,11 @@ public class WindowManager : MonoBehaviour
     [SerializeField] private Button _replay;
     [SerializeField] private RectTransform _startBattle;
 
+    [SerializeField] private RectTransform _canvas;
     private ISoundManager _soundManager;
     private GameDatabaseSO _database;
+    
+    private float OffscreenY => _canvas.rect.height * 1.5f;
 
     [Inject]
     private void Construct(IAsyncSubscriber<StartBattleMessage> startBattleSub,
@@ -59,10 +62,10 @@ public class WindowManager : MonoBehaviour
         _generate.interactable = false;
 
         await UniTask.WhenAll(
-            _character.DOAnchorPosY(Screen.height, _database.AnimationTime)
+            _character.DOAnchorPosY(OffscreenY, _database.AnimationTime)
                 .SetEase(Ease.InBack)
                 .ToUniTask(cancellationToken: token),
-            _startBattle.DOAnchorPosY(Screen.height, _database.AnimationTime)
+            _startBattle.DOAnchorPosY(OffscreenY, _database.AnimationTime)
                 .SetEase(Ease.Linear)
                 .ToUniTask(cancellationToken: token)
         );
@@ -81,10 +84,10 @@ public class WindowManager : MonoBehaviour
     private async UniTask OnBattleWon(Action action, CancellationToken token = default)
     {
         await UniTask.WhenAll(
-            _status.DOAnchorPosY(Screen.height, _database.AnimationTime)
+            _status.DOAnchorPosY(OffscreenY, _database.AnimationTime)
                 .SetEase(Ease.Linear)
                 .ToUniTask(cancellationToken: token),
-            _battle.DOAnchorPosY(Screen.height, _database.AnimationTime)
+            _battle.DOAnchorPosY(OffscreenY, _database.AnimationTime)
                 .SetEase(Ease.InBack)
                 .ToUniTask(cancellationToken: token)
         );
@@ -113,10 +116,10 @@ public class WindowManager : MonoBehaviour
     private async UniTask ReturnToCharacterWindow(CancellationToken token)
     {
         await UniTask.WhenAll(
-            _status.DOAnchorPosY(Screen.height, _database.AnimationTime)
+            _status.DOAnchorPosY(OffscreenY, _database.AnimationTime)
                 .SetEase(Ease.Linear)
                 .ToUniTask(cancellationToken: token),
-            _weaponEquipment.DOAnchorPosY(Screen.height, _database.AnimationTime)
+            _weaponEquipment.DOAnchorPosY(OffscreenY, _database.AnimationTime)
                 .SetEase(Ease.InBack)
                 .ToUniTask(cancellationToken: token)
         );
@@ -127,10 +130,10 @@ public class WindowManager : MonoBehaviour
     private async UniTask OnGameOver(CancellationToken token)
     {
         await UniTask.WhenAll(
-            _status.DOAnchorPosY(Screen.height, _database.AnimationTime)
+            _status.DOAnchorPosY(OffscreenY, _database.AnimationTime)
                 .SetEase(Ease.Linear)
                 .ToUniTask(cancellationToken: token),
-            _battle.DOAnchorPosY(Screen.height, _database.AnimationTime)
+            _battle.DOAnchorPosY(OffscreenY, _database.AnimationTime)
                 .SetEase(Ease.InBack)
                 .ToUniTask(cancellationToken: token)
         );
@@ -155,10 +158,10 @@ public class WindowManager : MonoBehaviour
         var rect = (RectTransform)_replay.transform;
 
         await UniTask.WhenAll(
-            _status.DOAnchorPosY(Screen.height, _database.AnimationTime)
+            _status.DOAnchorPosY(OffscreenY, _database.AnimationTime)
                 .SetEase(Ease.Linear)
                 .ToUniTask(cancellationToken: token),
-            rect.DOAnchorPosY(Screen.height, _database.AnimationTime)
+            rect.DOAnchorPosY(OffscreenY, _database.AnimationTime)
                 .SetEase(Ease.Linear)
                 .ToUniTask(cancellationToken: token)
         );
@@ -179,7 +182,7 @@ public class WindowManager : MonoBehaviour
         if (rectTransform == null) return;
 
         var anchoredPosition = rectTransform.anchoredPosition;
-        anchoredPosition.y = Screen.height;
+        anchoredPosition.y = OffscreenY;
         rectTransform.anchoredPosition = anchoredPosition;
 
         rectTransform.gameObject.SetActive(true);
