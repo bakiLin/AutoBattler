@@ -1,9 +1,12 @@
 using System;
+using UnityEngine;
 
 [Serializable]
-public class Stats
+public struct Stats
 {
-    public int Strength, Dexterity, Endurance;
+    [field: SerializeField] public int Strength { get; private set; }
+    [field: SerializeField] public int Dexterity { get; private set; }
+    [field: SerializeField] public int Endurance { get; private set; }
 
     public Stats(int strength, int dexterity, int endurance)
     {
@@ -12,11 +15,13 @@ public class Stats
         Endurance = endurance;
     }
 
-    public bool IsEqual(Stats stats)
+    public static Stats operator +(Stats a, Stats b)
     {
-        if (stats == null) return false;
-        if (stats.Strength == Strength && stats.Dexterity == Dexterity
-            && stats.Endurance == Endurance) return true;
-        return false;
+        return new Stats(a.Strength + b.Strength, a.Dexterity + b.Dexterity, a.Endurance + b.Endurance);
+    }
+
+    public bool IsZero()
+    {
+        return Strength == 0 && Dexterity == 0 && Endurance == 0;
     }
 }

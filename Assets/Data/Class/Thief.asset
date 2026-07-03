@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25084e90c55bb5943b293351e5c0237b, type: 3}
+  m_Name: Thief
+  m_EditorClassIdentifier: 
+  <Id>k__BackingField: Thief
+  <Health>k__BackingField: 4
+  <Weapon>k__BackingField: {fileID: 11400000, guid: 00b899ca867ca6f42916274430998db1, type: 2}
+  <Bonus>k__BackingField:
+  - <UnlockLevel>k__BackingField: 1
+    <ClassBonus>k__BackingField: {fileID: 11400000, guid: b28fe262e572f584291ae80bea79f31b, type: 2}
+  - <UnlockLevel>k__BackingField: 3
+    <ClassBonus>k__BackingField: {fileID: 11400000, guid: 25d2f14ef2e7b924c9908447c6703ec3, type: 2}
+  <StatBonus>k__BackingField:
+  - <UnlockLevel>k__BackingField: 2
+    <Stats>k__BackingField:
+      <Strength>k__BackingField: 0
+      <Dexterity>k__BackingField: 1
+      <Endurance>k__BackingField: 0

@@ -1,10 +1,10 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "SO/Bonus/Poison", fileName = "Poison")]
-public class Poison : BonusBase, IBonus
+public class Poison : BonusBase
 {
-    public override int Bonus(BattleData battleData)
+    public override int Use(BattleCharacter attacker, BattleCharacter target, int turn)
     {
-        return battleData.Turn - 1;
+        return turn - 1;
     }
 }

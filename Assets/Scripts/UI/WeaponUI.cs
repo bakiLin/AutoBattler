@@ -1,27 +1,26 @@
+using Cysharp.Threading.Tasks;
+using MessagePipe;
 using TMPro;
 using UnityEngine;
+using VContainer;
 
 public class WeaponUI : MonoBehaviour
 {
-    [SerializeField]
-    private BattleManager _battleManager;
+    [SerializeField] private TextMeshProUGUI _name;
+    [SerializeField] private TextMeshProUGUI _type;
+    [SerializeField] private TextMeshProUGUI _damage;
 
-    [SerializeField]
-    private TextMeshProUGUI _name, _type, _damage;
-
-    private void OnEnable()
+    [Inject]
+    private void Construct(ISubscriber<BattleVictoryMessage> battleVictory)
     {
-        _battleManager.OnEndBattle += UpdateWeaponUI;
+        DisposableBag.Create(
+            battleVictory.Subscribe(x => SetWeaponUI(x.Weapon))
+        ).AddTo(destroyCancellationToken);
     }
 
-    private void OnDisable()
+    private void SetWeaponUI(Weapon weapon)
     {
-        _battleManager.OnEndBattle -= UpdateWeaponUI;
-    }
-
-    private void UpdateWeaponUI(WeaponSO weapon)
-    {
-        _name.text = weapon.name;
+        _name.text = weapon.Id;
         _type.text = weapon.Type.ToString();
         _damage.text = weapon.Damage.ToString();
     }

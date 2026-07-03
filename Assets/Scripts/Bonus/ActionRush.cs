@@ -1,12 +1,12 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "SO/Bonus/Action Rush", fileName = "Action Rush")]
-public class ActionRush : BonusBase, IBonus
+public class ActionRush : BonusBase
 {
-    public override int Bonus(BattleData battleData)
+    public override int Use(BattleCharacter attacker, BattleCharacter target, int turn)
     {
-        if (battleData.Turn == 1)
-            return battleData.WeaponDamage;
+        if (turn == 1)
+            return attacker.Weapon.Damage;
         return 0;
     }
 }

@@ -1,11 +1,11 @@
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "SO/Bonus/Dragon", fileName = "Dragon")]
-public class Dragon : BonusBase, IBonus
+public class Dragon : BonusBase
 {
-    public override int Bonus(BattleData battleData)
+    public override int Use(BattleCharacter attacker, BattleCharacter target, int turn)
     {
-        if (battleData.Turn % 3 == 0)
+        if (turn % 3 == 0)
             return 3;
         return 0;
     }

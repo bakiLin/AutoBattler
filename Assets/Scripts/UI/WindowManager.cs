@@ -1,127 +1,194 @@
-using UnityEngine;
-using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using MessagePipe;
+using System;
+using System.Threading;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using VContainer;
 
 public class WindowManager : MonoBehaviour
 {
-    [SerializeField]
-    private BattleManager _battleManager;
-
-    [SerializeField]
-    private PlayerSO _player;
-
-    [SerializeField]
-    private float _animationTime;
-
-    [Header("WINDOW")]
-    [SerializeField] private RectTransform _characterWindow;
-    [SerializeField] private RectTransform _battleWindow;
-    [SerializeField] private RectTransform _weaponWindow;
+    [Header("WINDOWS")]
+    [SerializeField] private RectTransform _character;
+    [SerializeField] private RectTransform _battle;
+    [SerializeField] private RectTransform _weaponEquipment;
     [SerializeField] private RectTransform _status;
 
-    [Header("BUTTON")]
-    [SerializeField] private GameObject _generateButton;
-    [SerializeField] private GameObject _takeWeaponButton;
-    [SerializeField] private RectTransform _battleButton;
-    [SerializeField] private RectTransform _replayButton;
+    [Header("BUTTONS / ELEMENTS")]
+    [SerializeField] private Button _generate;
+    [SerializeField] private Button _takeWeapon;
+    [SerializeField] private Button _rejectWeapon;
+    [SerializeField] private Button _replay;
+    [SerializeField] private RectTransform _startBattle;
 
-    private void OnEnable()
-    {
-        _battleManager.OnStartBattle += BattleWindow;
-        _battleManager.OnEndBattle += WeaponWindow;
-        _battleManager.OnGameOver += GameOver;
-    }
+    [SerializeField] private RectTransform _canvas;
+    private ISoundManager _soundManager;
+    private GameDatabaseSO _database;
+    
+    private float OffscreenY => _canvas.rect.height * 1.5f;
 
-    private void OnDisable()
+    [Inject]
+    private void Construct(IAsyncSubscriber<StartBattleMessage> startBattleSub,
+        ISubscriber<BattleVictoryMessage> battleVictorySub,
+        ISubscriber<GameOverMessage> gameOverSub,
+        ISoundManager soundManager,
+        GameDatabaseSO database)
     {
-        _battleManager.OnStartBattle -= BattleWindow;
-        _battleManager.OnEndBattle -= WeaponWindow;
-        _battleManager.OnGameOver -= GameOver;
+        _soundManager = soundManager;
+        _database = database;
+
+        DisposableBag.Create(
+            startBattleSub.Subscribe(OnBattleStarted),
+            battleVictorySub.Subscribe(x => OnBattleWon(x.OnClickAction, destroyCancellationToken).Forget(Debug.LogException)),
+            gameOverSub.Subscribe(_ => OnGameOver(destroyCancellationToken).Forget(Debug.LogException))
+        ).AddTo(destroyCancellationToken);
     }
 
     private void Start()
     {
-        Invoke(nameof(ShowStartUI), .2f);
+        ShowMenuUI(destroyCancellationToken);
     }
 
-    private void ShowStartUI()
+    private void ShowMenuUI(CancellationToken token)
     {
-        MoveUIDown(ref _characterWindow, 0f);
-        MoveUIDown(ref _battleButton, -80f);
+        MoveUI(_character, 0f, _database.AnimationTime, token).Forget(Debug.LogException);
+        MoveUI(_startBattle, -80f, _database.AnimationTime, token).Forget(Debug.LogException);
     }
 
-    private void BattleWindow()
+    private async UniTask OnBattleStarted(StartBattleMessage message, CancellationToken token)
     {
-        _characterWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
-        _battleButton.DOAnchorPosY(1200f, _animationTime)
-            .SetEase(Ease.Linear)
-            .OnComplete(() => 
-            {
-                _generateButton.SetActive(false);
+        _generate.interactable = false;
 
-                MoveUIDown(ref _battleWindow, 0f);
-                MoveUIDown(ref _status, -90f);
-            });
+        await UniTask.WhenAll(
+            _character.DOAnchorPosY(OffscreenY, _database.AnimationTime)
+                .SetEase(Ease.InBack)
+                .ToUniTask(cancellationToken: token),
+            _startBattle.DOAnchorPosY(OffscreenY, _database.AnimationTime)
+                .SetEase(Ease.Linear)
+                .ToUniTask(cancellationToken: token)
+        );
+
+        if (_generate.gameObject.activeSelf)
+            _generate.gameObject.SetActive(false);
+
+        await UniTask.WhenAll(
+            MoveUI(_battle, 0f, _database.AnimationTime, token),
+            MoveUI(_status, -90f, _database.AnimationTime, token)
+        );
+    
+        _startBattle.GetComponent<Button>().interactable = true;
     }
 
-    private void WeaponWindow(WeaponSO weapon)
+    private async UniTask OnBattleWon(Action action, CancellationToken token = default)
     {
-        _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
-        _battleWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
-            .OnComplete(() =>
-            {
-                var button = _takeWeaponButton.GetComponent<Button>();
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => {
-                    AudioManager.Instance.Play("button");
-                    _player.Weapon = weapon;
-                    CharacterWindow();
-                });
+        await UniTask.WhenAll(
+            _status.DOAnchorPosY(OffscreenY, _database.AnimationTime)
+                .SetEase(Ease.Linear)
+                .ToUniTask(cancellationToken: token),
+            _battle.DOAnchorPosY(OffscreenY, _database.AnimationTime)
+                .SetEase(Ease.InBack)
+                .ToUniTask(cancellationToken: token)
+        );
 
-                MoveUIDown(ref _status, -90f);
-                MoveUIDown(ref _weaponWindow, 0f);
-            });
+        _rejectWeapon.onClick.RemoveAllListeners();
+        _rejectWeapon.onClick.AddListener(() =>
+        {
+            PlayClickSound();
+            ReturnToCharacterWindow(destroyCancellationToken).Forget(Debug.LogException);
+        });
+
+        _takeWeapon.onClick.RemoveAllListeners();
+        _takeWeapon.onClick.AddListener(() =>
+        {
+            PlayClickSound();
+            action.Invoke();
+            ReturnToCharacterWindow(destroyCancellationToken).Forget(Debug.LogException);
+        });
+
+        await UniTask.WhenAll(
+            MoveUI(_status, -90f, _database.AnimationTime, token),
+            MoveUI(_weaponEquipment, 0f, _database.AnimationTime, token)
+        );
     }
 
-    public void CharacterWindow()
+    private async UniTask ReturnToCharacterWindow(CancellationToken token)
     {
-        _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
-        _weaponWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
-            .OnComplete(() => ShowStartUI());
+        await UniTask.WhenAll(
+            _status.DOAnchorPosY(OffscreenY, _database.AnimationTime)
+                .SetEase(Ease.Linear)
+                .ToUniTask(cancellationToken: token),
+            _weaponEquipment.DOAnchorPosY(OffscreenY, _database.AnimationTime)
+                .SetEase(Ease.InBack)
+                .ToUniTask(cancellationToken: token)
+        );
+
+        ShowMenuUI(token);
     }
 
-    private void GameOver()
+    private async UniTask OnGameOver(CancellationToken token)
     {
-        _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
-        _battleWindow.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack)
-            .OnComplete(() =>
-            {
-                var button = _replayButton.GetComponent<Button>();
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => Replay());
+        await UniTask.WhenAll(
+            _status.DOAnchorPosY(OffscreenY, _database.AnimationTime)
+                .SetEase(Ease.Linear)
+                .ToUniTask(cancellationToken: token),
+            _battle.DOAnchorPosY(OffscreenY, _database.AnimationTime)
+                .SetEase(Ease.InBack)
+                .ToUniTask(cancellationToken: token)
+        );
 
-                MoveUIDown(ref _replayButton, 0f);
-                _status.DOAnchorPosY(-90f, _animationTime).SetEase(Ease.Linear);
-            });
+        _replay.onClick.RemoveAllListeners();
+        _replay.onClick.AddListener(() =>
+        {
+            PlayClickSound();
+            OnReplayClicked(destroyCancellationToken).Forget(Debug.LogException);
+        });
+
+        await UniTask.WhenAll(
+            MoveUI((RectTransform)_replay.transform, 0f, _database.AnimationTime, token),
+            _status.DOAnchorPosY(-90f, _database.AnimationTime)
+                .SetEase(Ease.Linear)
+                .ToUniTask(cancellationToken: token)
+        );
     }
 
-    public void Replay()
+    private async UniTask OnReplayClicked(CancellationToken token)
     {
-        AudioManager.Instance.Play("button");
-        _status.DOAnchorPosY(1200f, _animationTime).SetEase(Ease.InBack);
-        _replayButton.DOAnchorPosY(1200f, _animationTime)
-            .SetEase(Ease.InBack)
-            .OnComplete(() => SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex));
+        var rect = (RectTransform)_replay.transform;
+
+        await UniTask.WhenAll(
+            _status.DOAnchorPosY(OffscreenY, _database.AnimationTime)
+                .SetEase(Ease.Linear)
+                .ToUniTask(cancellationToken: token),
+            rect.DOAnchorPosY(OffscreenY, _database.AnimationTime)
+                .SetEase(Ease.Linear)
+                .ToUniTask(cancellationToken: token)
+        );
+
+        if (token.IsCancellationRequested) return;
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    private void MoveUIDown(ref RectTransform rectTransform, float position)
+    private void PlayClickSound()
     {
+        _soundManager.Get().Play(_database.ClickSound, destroyCancellationToken);
+    }
+
+    private async UniTask MoveUI(RectTransform rectTransform, float targetPositionY, float duration,
+        CancellationToken token = default)
+    {
+        if (rectTransform == null) return;
+
         var anchoredPosition = rectTransform.anchoredPosition;
-        anchoredPosition.y = 1200f;
+        anchoredPosition.y = OffscreenY;
         rectTransform.anchoredPosition = anchoredPosition;
 
         rectTransform.gameObject.SetActive(true);
-        rectTransform.DOAnchorPosY(position, _animationTime).SetEase(Ease.Linear);
+
+        await rectTransform.DOAnchorPosY(targetPositionY, duration)
+            .SetEase(Ease.Linear)
+            .ToUniTask(cancellationToken: token);
     }
 }
