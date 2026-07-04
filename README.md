@@ -1,4 +1,4 @@
-# Auto-Battler RPG (Lesta Academy Test Assignment Refactor)
+# Auto-Battler RPG (Lesta Academy Test Assignment)
 
 A minimalist RPG auto-battler originally created as a test assignment for **Lesta Academy**, now completely refactored and modernized to demonstrate clean architecture, scalable patterns, and AI-assisted workflow. 
 
