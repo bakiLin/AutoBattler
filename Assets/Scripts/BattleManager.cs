@@ -42,12 +42,9 @@ public class BattleManager
         BattleCharacter player = new BattlePlayer(_playerManager.GetPlayerSnapshot());
         BattleCharacter enemy = new BattleEnemy(_database.GetRandomEnemy());
 
-        _setBattleStatus.Publish(new SetBattleStatusMessage($"{player.Id} vs {enemy.Id}"));
-        await _startBattle.PublishAsync(new StartBattleMessage(player, enemy), cancellationToken);
-        await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken, cancelImmediately: true);
+        await InitializeBattle(player, enemy, cancellationToken);
 
-        BattleCharacter attacker = player.Stats.Dexterity >= enemy.Stats.Dexterity ? player : enemy;
-        BattleCharacter target = attacker == player ? enemy : player;
+        (BattleCharacter attacker, BattleCharacter target) = DetermineFirstAttacker(player, enemy);
 
         int playerTurnCount = 0;
         int enemyTurnCount = 0;
@@ -56,27 +53,54 @@ public class BattleManager
         {
             int currentTurnCount = (attacker == player) ? ++playerTurnCount : ++enemyTurnCount;
 
-            _setBattleStatus.Publish(new SetBattleStatusMessage($"{attacker.Id}'s turn"));
-            await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken, cancelImmediately: true);
+            await ExecuteTurn(attacker, target, player, enemy, currentTurnCount, cancellationToken);
 
-            if (IsAttackSuccessful(attacker.Stats.Dexterity, target.Stats.Dexterity))
-            {
-                int damage = CalculateDamage(attacker, target, currentTurnCount);
-                target.TakeDamage(damage);
-                _updateUIInBattle.Publish(new UpdateUIInBattleMessage(player.Health, enemy.Health));
-                _setBattleStatus.Publish(new SetBattleStatusMessage($"Success: {damage} dmg"));
-            }
-            else
-            {
-                _setBattleStatus.Publish(new SetBattleStatusMessage($"Miss"));
-                _characterMissed.Publish(new CharacterMissedMessage(target == player));
-            }
-
-            await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken, cancelImmediately: true);
             (attacker, target) = (target, attacker);
         }
 
         await HandleBattleResult(player as BattlePlayer, enemy as BattleEnemy, cancellationToken);
+    }
+
+    private async UniTask InitializeBattle(BattleCharacter player, BattleCharacter enemy, CancellationToken cancellationToken)
+    {
+        _setBattleStatus.Publish(new SetBattleStatusMessage($"{player.Id} vs {enemy.Id}"));
+        await _startBattle.PublishAsync(new StartBattleMessage(player, enemy), cancellationToken);
+        await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken, cancelImmediately: true);
+    }
+
+    private (BattleCharacter attacker, BattleCharacter target) DetermineFirstAttacker(BattleCharacter player, BattleCharacter enemy)
+    {
+        BattleCharacter attacker = player.Stats.Dexterity >= enemy.Stats.Dexterity ? player : enemy;
+        BattleCharacter target = attacker == player ? enemy : player;
+        return (attacker, target);
+    }
+
+    private async UniTask ExecuteTurn(BattleCharacter attacker, BattleCharacter target, BattleCharacter player, BattleCharacter enemy, int currentTurnCount, CancellationToken cancellationToken)
+    {
+        _setBattleStatus.Publish(new SetBattleStatusMessage($"{attacker.Id}'s turn"));
+        await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken, cancelImmediately: true);
+
+        if (IsAttackSuccessful(attacker.Stats.Dexterity, target.Stats.Dexterity))
+            await ProcessSuccessfulAttack(attacker, target, player, enemy, currentTurnCount);
+        else
+            ProcessMissedAttack(target, player);
+        
+        await UniTask.Delay(_database.TurnDelay, cancellationToken: cancellationToken, cancelImmediately: true);
+    }
+
+    private async UniTask ProcessSuccessfulAttack(BattleCharacter attacker, BattleCharacter target, BattleCharacter player, BattleCharacter enemy, int currentTurnCount)
+    {
+        int damage = CalculateDamage(attacker, target, currentTurnCount);
+        target.TakeDamage(damage);
+        _updateUIInBattle.Publish(new UpdateUIInBattleMessage(player.Health, enemy.Health));
+        _setBattleStatus.Publish(new SetBattleStatusMessage($"Success: {damage} dmg"));
+        await UniTask.Yield();
+    }
+
+    private void ProcessMissedAttack(BattleCharacter target, BattleCharacter player)
+    {
+        _setBattleStatus.Publish(new SetBattleStatusMessage($"Miss"));
+        _characterMissed.Publish(new CharacterMissedMessage(target == player));
     }
 
     private bool IsAttackSuccessful(int attackerDex, int targetDex)
